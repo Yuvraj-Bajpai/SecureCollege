@@ -1,0 +1,304 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Brand Colors - Based on Secure College Logo */
+    --color-white: #FFFFFF;
+    --color-black: #000000;
+
+    /* Primary Blue Scale (from logo blue #6B9EFF) */
+    --color-blue-50: #F0F5FF;
+    --color-blue-100: #E0EBFF;
+    --color-blue-200: #C7DBFF;
+    --color-blue-300: #A3C4FF;
+    --color-blue-400: #6B9EFF; /* PRIMARY - Logo Blue */
+    --color-blue-500: #4A7FFF;
+    --color-blue-600: #2E5FE6;
+    --color-blue-700: #1E47CC;
+    --color-blue-800: #1433A3;
+    --color-blue-900: #0D2266;
+
+    /* Neutral Gray Scale (complementary to black) */
+    --color-gray-50: #FAFAFA;
+    --color-gray-100: #F5F5F5;
+    --color-gray-200: #E5E5E5;
+    --color-gray-300: #D4D4D4;
+    --color-gray-400: #A3A3A3;
+    --color-gray-500: #737373;
+    --color-gray-600: #525252;
+    --color-gray-700: #404040;
+    --color-gray-800: #262626;
+    --color-gray-900: #171717;
+
+    /* Accent Colors */
+    --color-success-green: #10B981;
+    --color-success-light: #D1FAE5;
+    --color-warning-orange: #F59E0B;
+    --color-warning-light: #FEF3C7;
+    --color-error-red: #EF4444;
+    --color-error-light: #FEE2E2;
+
+    /* Semantic Color Tokens (Light Mode) */
+    --color-background: #FFFFFF;
+    --color-surface: #FAFAFA;
+    --color-text: #000000;
+    --color-text-secondary: #525252;
+    --color-primary: #6B9EFF; /* Logo Blue */
+    --color-primary-hover: #4A7FFF;
+    --color-primary-active: #2E5FE6;
+    --color-primary-light: #E0EBFF;
+    --color-border: #E5E5E5;
+    --color-border-strong: #D4D4D4;
+
+    /* Button specific */
+    --color-btn-primary-bg: #6B9EFF;
+    --color-btn-primary-text: #FFFFFF;
+    --color-btn-primary-hover: #4A7FFF;
+    --color-btn-secondary-bg: #F5F5F5;
+    --color-btn-secondary-text: #000000;
+    --color-btn-secondary-hover: #E5E5E5;
+
+    /* Card & Component Colors */
+    --color-card-bg: #FFFFFF;
+    --color-card-border: #E5E5E5;
+    --color-card-hover-shadow: rgba(107, 158, 255, 0.15);
+
+    /* Status Colors */
+    --color-success: #10B981;
+    --color-warning: #F59E0B;
+    --color-error: #EF4444;
+    --color-info: #6B9EFF;
+
+    /* RGB versions for opacity control */
+    --color-primary-rgb: 107, 158, 255;
+    --color-black-rgb: 0, 0, 0;
+    --color-success-rgb: 16, 185, 129;
+    --color-error-rgb: 239, 68, 68;
+
+    /* Typography */
+    --font-family-base: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-family-heading: var(--font-poppins), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 24px;
+    --font-size-3xl: 30px;
+    --font-size-4xl: 36px;
+    --font-size-5xl: 48px;
+
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+
+    /* Spacing */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-base: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-primary: 0 4px 14px rgba(107, 158, 255, 0.25);
+
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Dark Mode Colors - Complete Theme Profile */
+  .dark {
+    --background: 0 0% 5%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 10%;
+    --primary: 219 100% 71%;
+    --border: 0 0% 20%;
+
+    /* Comprehensive Dark Mode Colors */
+    --color-background: #0A0A0A;
+    --color-surface: #1A1A1A;
+    --color-text: #FFFFFF;
+    --color-text-secondary: #B0B0B0;
+    --color-primary: #6B9EFF;
+    --color-primary-hover: #8FB3FF;
+    --color-primary-active: #4A7FFF;
+    --color-primary-light: #1E1E2E;
+    --color-border: #2A2A2A;
+    --color-border-strong: #3A3A3A;
+    --color-card-bg: #1A1A1A;
+    --color-card-border: #2A2A2A;
+    --color-btn-secondary-bg: #2A2A2A;
+    --color-btn-secondary-text: #FFFFFF;
+    --color-btn-secondary-hover: #3A3A3A;
+    --color-card-hover-shadow: rgba(107, 158, 255, 0.3);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-text;
+    font-family: var(--font-inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-display: swap;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-poppins, var(--font-inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif));
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    font-display: swap;
+  }
+
+  /* Prevent font flash */
+  .hero-title,
+  .hero-subtitle,
+  .hero-badges,
+  .hero-search {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+
+/* Custom Utility Classes */
+@layer utilities {
+  .text-gradient-primary {
+    background: linear-gradient(135deg, #6B9EFF 0%, #4A7FFF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #6B9EFF 0%, #4A7FFF 100%);
+  }
+
+  .bg-gradient-light {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F0F5FF 100%);
+  }
+
+  .shadow-primary-glow {
+    box-shadow: 0 4px 24px rgba(107, 158, 255, 0.2);
+  }
+  
+  /* Blob Animation */
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+  
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+  
+  @keyframes blob {
+    0%, 100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+  }
+
+  /* Enhanced select styling */
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L12 15L18 9' stroke='%234A7FFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+
+  /* Gradient text animations */
+  @keyframes gradient {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .text-gradient-animated {
+    background: linear-gradient(-45deg, #6B9EFF, #4A7FFF, #2E5FE6, #4A7FFF);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient 8s ease infinite;
+  }
+
+  /* Smooth scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Enhanced animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  /* Card hover effects */
+  .card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+}
+
