@@ -177,11 +177,19 @@ export default function CollegeProfilePage() {
               {/* Left: Logo & Info */}
               <div className="md:col-span-2 flex gap-6">
                 <div className="relative w-20 h-20 rounded-full overflow-hidden bg-white flex-shrink-0">
+                  {/* Light theme logo */}
                   <Image
                     src={college.logo}
                     alt={college.name}
                     fill
-                    className="object-contain p-2"
+                    className="object-contain p-2 dark:hidden"
+                  />
+                  {/* Dark theme logo */}
+                  <Image
+                    src="/images/logo-dark.png"
+                    alt={college.name}
+                    fill
+                    className="object-contain p-2 hidden dark:block"
                   />
                 </div>
                 <div className="flex-1">

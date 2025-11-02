@@ -39,11 +39,19 @@ export function CollegeCard({ college, className = '' }: CollegeCardProps) {
         <CardHeader className="pb-4">
           <div className="flex items-start gap-4">
             <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-800">
+              {/* Light theme logo */}
               <Image
-                src={college.logo || '/images/logo-placeholder.png'}
+                src={college.logo || '/images/logo.png'}
                 alt={`${college.name} logo`}
                 fill
-                className="object-contain p-2"
+                className="object-contain p-2 dark:hidden"
+              />
+              {/* Dark theme logo */}
+              <Image
+                src={college.logo || '/images/logo-dark.png'}
+                alt={`${college.name} logo`}
+                fill
+                className="object-contain p-2 hidden dark:block"
               />
             </div>
             <div className="flex-1 min-w-0">
