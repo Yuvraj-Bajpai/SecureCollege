@@ -18,6 +18,10 @@ export interface CollegeCardData {
   logo: string
   rating: number
   feeRange?: string
+  placementPercent?: string
+  averagePackage?: string
+  highestPackage?: string
+  description?: string
   highlight?: boolean
 }
 
@@ -91,6 +95,33 @@ export function CollegeCard({ college, className = '' }: CollegeCardProps) {
                 Fees: <span className="font-semibold text-text">{college.feeRange}</span>
               </span>
             </div>
+          )}
+          {college.placementPercent && (
+            <div className="flex items-center gap-2 text-sm mt-2">
+              <TrendingUp className="w-4 h-4 text-primary" />
+              <span className="text-text-secondary">
+                Placement: <span className="font-semibold text-text">{college.placementPercent}</span>
+              </span>
+            </div>
+          )}
+          {(college.averagePackage || college.highestPackage) && (
+            <div className="flex items-center gap-4 text-sm mt-2">
+              {college.averagePackage && (
+                <span className="text-text-secondary">
+                  Avg: <span className="font-semibold text-text">{college.averagePackage}</span>
+                </span>
+              )}
+              {college.highestPackage && (
+                <span className="text-text-secondary">
+                  High: <span className="font-semibold text-text">{college.highestPackage}</span>
+                </span>
+              )}
+            </div>
+          )}
+          {college.description && (
+            <p className="text-xs text-muted-foreground mt-3 line-clamp-2">
+              {college.description}
+            </p>
           )}
         </CardContent>
 

@@ -15,6 +15,7 @@ import {
 import { CollegeCard } from '@/components/common/CollegeCard'
 import { StatCard } from '@/components/common/StatCard'
 import { INDIAN_STATES } from '@/lib/constants'
+import CollegesSection from '@/components/common/CollegesSection'
 
 const branches = [
   'All Branches',
@@ -419,36 +420,7 @@ export default function HomePage() {
         </section>
 
         {/* Section 2: FEATURED COLLEGES */}
-        <section className="py-16 bg-blue-50 dark:bg-gray-900" data-animate>
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-                Top Engineering Colleges in India
-              </h2>
-              <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
-                Discover the best engineering colleges ranked by students, placements, and infrastructure
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredColleges.map((college, idx) => (
-                <motion.div
-                  key={college.id}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <CollegeCard college={college} />
-                </motion.div>
-              ))}
-            </div>
-            <div className="text-center mt-12">
-              <Button variant="outline" asChild size="lg">
-                <Link href="/colleges">View All Colleges</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+        <CollegesSection />
 
         {/* Section 3: HOW IT WORKS */}
         <section className="py-16 bg-blue-50 dark:bg-gray-900" data-animate>
