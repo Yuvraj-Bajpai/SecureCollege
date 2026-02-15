@@ -34,7 +34,7 @@ export function CollegeCard({ college, className = '' }: CollegeCardProps) {
   return (
     <Card 
       className={cn(
-        'group hover:shadow-primary-glow transition-all duration-300 overflow-hidden cursor-pointer',
+        'group overflow-hidden cursor-pointer border border-white/10 bg-black transition-shadow duration-300 hover:shadow-primary-glow',
         college.highlight && 'ring-2 ring-primary',
         className
       )}
@@ -48,14 +48,14 @@ export function CollegeCard({ college, className = '' }: CollegeCardProps) {
                 src={college.logo || '/images/logo.png'}
                 alt={`${college.name} logo`}
                 fill
-                className="object-contain p-2 dark:hidden"
+                className="object-contain p-2 dark:hidden transition-transform duration-500 group-hover:scale-110"
               />
               {/* Dark theme logo */}
               <Image
                 src={college.logo || '/images/logo-dark.png'}
                 alt={`${college.name} logo`}
                 fill
-                className="object-contain p-2 hidden dark:block"
+                className="object-contain p-2 hidden dark:block transition-transform duration-500 group-hover:scale-110"
               />
             </div>
             <div className="flex-1 min-w-0">
