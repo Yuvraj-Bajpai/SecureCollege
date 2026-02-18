@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { CollegeCard, type CollegeCardData } from '@/components/common/CollegeCard'
@@ -35,7 +35,6 @@ export function CollegesClient({ initialColleges }: Props) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [currentPage, setCurrentPage] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
   const [colleges, setColleges] = useState<CollegeCardData[]>(initialColleges || [])
 
   const [filters, setFilters] = useState<FilterState>({
@@ -50,14 +49,6 @@ export function CollegesClient({ initialColleges }: Props) {
     facilities: [],
     special: []
   })
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   const activeFiltersCount = useMemo(() => {
     let count = 0
@@ -125,20 +116,23 @@ export function CollegesClient({ initialColleges }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-12">
-      <div className="bg-white border-b border-gray-200 sticky top-16 z-40">
+    <div className="min-h-screen pb-16">
+      <div className="sticky top-16 z-40 border-b border-white/10 bg-black/40 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-6">
-          <div className={`flex items-center gap-2 text-sm text-gray-600 mb-4 transition-all duration-300 ${isScrolled ? 'hidden' : 'block'}`}>
+          <div className="flex items-center gap-2 text-sm text-[#A1A1AA] mb-4">
             <Link href="/" className="hover:text-primary transition-colors">Home</Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-900 font-medium">Colleges</span>
+            <span className="text-white font-medium">Colleges</span>
           </div>
-          <div className={`flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 transition-all duration-300 ${isScrolled ? 'hidden' : 'flex'}`}>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+              <h1
+                className="text-3xl lg:text-4xl font-bold text-white mb-2"
+                style={{ textShadow: '0 0 14px rgba(91, 141, 239, 0.25)' }}
+              >
                 Engineering Colleges in India
               </h1>
-              <div className="flex items-center gap-4 text-sm text-gray-600">
+              <div className="flex items-center gap-4 text-sm text-[#A1A1AA]">
                 <span className="flex items-center gap-1">
                   <Building2 className="w-4 h-4" />
                   {sortedColleges.length} Colleges Found
@@ -150,42 +144,42 @@ export function CollegesClient({ initialColleges }: Props) {
           </div>
           <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#A1A1AA]" />
               <Input
                 type="text"
                 placeholder="Search colleges by name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-11"
+                className="pl-10 h-11 bg-white/5 border-white/15 text-white placeholder:text-[#A1A1AA] backdrop-blur-sm"
               />
             </div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="h-11 px-4 rounded-md border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="h-11 px-4 rounded-full border border-white/15 bg-white/5 text-sm text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              <option value="relevance">Sort: Relevance</option>
-              <option value="highest-rating">Highest Rating</option>
-              <option value="lowest-fees">Lowest Fees</option>
-              <option value="nirf-rank">NIRF Rank</option>
+              <option className="text-slate-900" value="relevance">Sort: Relevance</option>
+              <option className="text-slate-900" value="highest-rating">Highest Rating</option>
+              <option className="text-slate-900" value="lowest-fees">Lowest Fees</option>
+              <option className="text-slate-900" value="nirf-rank">NIRF Rank</option>
             </select>
-            <div className="flex items-center gap-2 border border-gray-300 rounded-md p-1">
+            <div className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 p-1 backdrop-blur-sm">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded transition-colors ${
+                className={`p-2 rounded-full transition-colors ${
                   viewMode === 'grid' 
                     ? 'bg-primary text-white' 
-                    : 'text-gray-600 hover:bg-gray-100'
+                    : 'text-[#A1A1AA] hover:bg-white/10'
                 }`}
               >
                 <Grid className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded transition-colors ${
+                className={`p-2 rounded-full transition-colors ${
                   viewMode === 'list' 
                     ? 'bg-primary text-white' 
-                    : 'text-gray-600 hover:bg-gray-100'
+                    : 'text-[#A1A1AA] hover:bg-white/10'
                 }`}
               >
                 <List className="w-5 h-5" />
@@ -194,8 +188,8 @@ export function CollegesClient({ initialColleges }: Props) {
           </div>
         </div>
       </div>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+      <div className="container mx-auto px-4 pt-14 pb-16">
+        <div className="mt-6 lg:mt-8 flex flex-col lg:flex-row gap-8">
           <aside className="w-full lg:w-80 flex-shrink-0">
             <FilterSidebar
               filters={filters}
@@ -207,17 +201,19 @@ export function CollegesClient({ initialColleges }: Props) {
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-64 bg-gray-200 animate-pulse rounded-lg" />
+                  <div key={i} className="h-64 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl animate-pulse" />
                 ))}
               </div>
             ) : paginatedColleges.length > 0 ? (
               <>
-                <div className={cn(
-                  "grid gap-6",
-                  viewMode === 'grid' 
-                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
-                    : "grid-cols-1"
-                )}>
+                <div
+                  className={cn(
+                    "grid gap-6",
+                    viewMode === 'grid'
+                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                      : "grid-cols-1"
+                  )}
+                >
                   {paginatedColleges.map((college, idx) => (
                     <motion.div
                       key={college.id}
@@ -272,11 +268,11 @@ export function CollegesClient({ initialColleges }: Props) {
               </>
             ) : (
               <div className="text-center py-16">
-                <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <Building2 className="w-16 h-16 text-[#A1A1AA] mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-white mb-2">
                   No colleges found
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-[#A1A1AA] mb-6">
                   Try adjusting your filters or search query
                 </p>
                 <Button
@@ -306,4 +302,3 @@ export function CollegesClient({ initialColleges }: Props) {
     </div>
   )
 }
-

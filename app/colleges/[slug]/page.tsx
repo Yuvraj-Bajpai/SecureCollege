@@ -12,12 +12,13 @@ export async function generateStaticParams() {
   try {
     const { data, error } = await supabase.from('colleges').select('slug')
     if (error) {
-      console.warn('Supabase error in generateStaticParams:', error.message)
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Supabase error in generateStaticParams:', error.message)
+      }
       return []
     }
-    return (data || []).map((c: any) => ({ slug: c.slug }))
-  } catch (error) {
-    console.warn('Error in generateStaticParams:', error)
+    return (data || []).map((c: { slug: string }) => ({ slug: c.slug }))
+  } catch {
     return []
   }
 }

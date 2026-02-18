@@ -2,19 +2,20 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 interface LogoProps {
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   className?: string
 }
 
 export function Logo({ size = 'md', className = '' }: LogoProps) {
   const sizes = {
     sm: { height: 50 },
-    md: { height: 70 },
+    md: { height: 84 },
     lg: { height: 90 },
+    xl: { height: 168 },
   }
 
   return (
-    <Link href="/" className={`inline-block ${className} rounded-lg p-2 hover:bg-blue-200 dark:hover:bg-gray-700 transition-colors duration-200`}>
+    <Link href="/" className={`inline-block ${className} rounded-lg p-2 transition-all duration-300 hover:shadow-[0_0_22px_rgba(107,158,255,0.45)]`}>
       {/* Light theme logo */}
       <Image 
         src="/images/logo.png" 

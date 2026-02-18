@@ -96,25 +96,25 @@ export function FilterSidebar({ filters, onChange, activeFiltersCount }: FilterS
     })
   }
 
-  const FilterSection = ({ 
-    title, 
-    section, 
-    children 
-  }: { 
+  const FilterSection = ({
+    title,
+    section,
+    children
+  }: {
     title: string
     section: string
-    children: React.ReactNode 
+    children: React.ReactNode
   }) => (
     <Collapsible open={expanded.includes(section)}>
-      <CollapsibleTrigger 
-        className="flex items-center justify-between w-full p-4 hover:bg-gray-50 rounded-lg transition-colors"
+      <CollapsibleTrigger
+        className="flex items-start justify-between w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-sm transition-colors hover:bg-white/10"
         onClick={() => toggleExpanded(section)}
       >
-        <span className="font-semibold text-sm">{title}</span>
+        <span className="font-semibold text-sm text-white">{title}</span>
         {expanded.includes(section) ? (
-          <ChevronUp className="w-4 h-4 text-gray-500" />
+          <ChevronUp className="w-4 h-4 text-[#A1A1AA] mt-0.5" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-gray-500" />
+          <ChevronDown className="w-4 h-4 text-[#A1A1AA] mt-0.5" />
         )}
       </CollapsibleTrigger>
       <CollapsibleContent className="px-4 pb-4">

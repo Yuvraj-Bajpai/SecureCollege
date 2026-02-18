@@ -11,13 +11,11 @@ import { cn } from '@/lib/utils'
 
 export function Header() {
   const pathname = usePathname()
-  const [isScrolled, setIsScrolled] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
+    const handleScroll = () => setScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -25,10 +23,10 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300",
-        isScrolled 
-          ? "bg-blue-50 dark:bg-blue-900 backdrop-blur-sm shadow-md" 
-          : "bg-blue-50 dark:bg-blue-900 border-b border-blue-200 dark:border-blue-800"
+        "fixed top-0 z-50 w-full transition-all duration-300",
+        scrolled 
+          ? "bg-black/60 backdrop-blur-md border-b border-white/10 shadow-lg" 
+          : "bg-transparent border-b border-transparent"
       )}
     >
       <div className="container mx-auto px-4">
@@ -138,4 +136,3 @@ export function Header() {
     </header>
   )
 }
-

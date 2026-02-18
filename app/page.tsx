@@ -4,8 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { 
   Search, MapPin, TrendingUp, Award, GraduationCap,
@@ -36,7 +35,6 @@ const branches = [
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null)
   const [rank, setRank] = useState('')
-  const [budget, setBudget] = useState(100000)
   const [selectedBranch, setSelectedBranch] = useState('All Branches')
   const [branchSearchQuery, setBranchSearchQuery] = useState('')
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false)
@@ -45,41 +43,18 @@ export default function HomePage() {
   const [stateSearchQuery, setStateSearchQuery] = useState('')
   const [isStateDropdownOpen, setIsStateDropdownOpen] = useState(false)
   const stateDropdownRef = useRef<HTMLDivElement>(null)
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-  
-  useEffect(() => {
-    // Ensure elements are always visible - use Framer Motion only for smooth animations
-    // No GSAP that might hide elements
-  }, [])
-
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      setMousePos({ x: event.clientX, y: event.clientY })
-    }
-
-    const handleTouchMove = (event: TouchEvent) => {
-      if (event.touches.length > 0) {
-        const touch = event.touches[0]
-        setMousePos({ x: touch.clientX, y: touch.clientY })
-      }
-    }
-
-    window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('touchmove', handleTouchMove, { passive: true })
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('touchmove', handleTouchMove)
-    }
-  }, [])
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (branchDropdownRef.current && !branchDropdownRef.current.contains(event.target as Node)) {
+      const target = event.target
+      if (!target || !(target instanceof Node)) {
+        return
+      }
+      if (branchDropdownRef.current && !branchDropdownRef.current.contains(target)) {
         setIsBranchDropdownOpen(false)
       }
-      if (stateDropdownRef.current && !stateDropdownRef.current.contains(event.target as Node)) {
+      if (stateDropdownRef.current && !stateDropdownRef.current.contains(target)) {
         setIsStateDropdownOpen(false)
       }
     }
@@ -190,25 +165,24 @@ export default function HomePage() {
         }}
       />
 
-      <div className="relative min-h-screen bg-[#06132E] text-white overflow-hidden">
-        <div
-          style={{ left: mousePos.x, top: mousePos.y }}
-          className="fixed z-20 -translate-x-1/2 -translate-y-1/2 pointer-events-none w-96 h-96 md:w-[32rem] md:h-[32rem] bg-gradient-radial from-blue-500/20 via-purple-500/10 to-transparent blur-3xl rounded-full transition-transform duration-200 ease-out"
-        />
+      <div className="relative min-h-screen bg-[#0A0A0A] bg-gradient-to-b from-[#0F0F0F] to-[#0A0A0A] text-white overflow-hidden">
         {/* Global Background Elements */}
         <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-0 right-1/4 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
-          <div className="absolute top-[-10%] left-[-10%] h-[40%] w-[40%] rounded-full bg-blue-500/10 blur-[120px] dark:bg-blue-600/5 animate-pulse" />
-          <div className="absolute bottom-[-10%] right-[-10%] h-[40%] w-[40%] rounded-full bg-indigo-500/10 blur-[120px] dark:bg-indigo-600/5" />
-          <div className="absolute top-[20%] right-[5%] h-[30%] w-[30%] rounded-full bg-cyan-500/10 blur-[100px] dark:bg-cyan-600/5 animate-pulse" />
+          <div className="absolute top-0 inset-x-0 h-[40rem] bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(91,141,239,0.1),transparent)] blur-3xl" />
+          <div className="absolute top-0 right-1/4 h-96 w-96 rounded-full bg-[#5B8DEF]/10 blur-3xl" />
+          <div className="absolute top-[-10%] left-[-10%] h-[40%] w-[40%] rounded-full bg-[#5B8DEF]/10 blur-[120px] animate-pulse" />
+          <div className="absolute bottom-[-10%] right-[-10%] h-[40%] w-[40%] rounded-full bg-indigo-500/10 blur-[120px]" />
+          <div className="absolute top-[20%] right-[5%] h-[30%] w-[30%] rounded-full bg-cyan-500/10 blur-[100px] animate-pulse" />
         </div>
 
-        {/* Section 1: HERO */}
+        {/* Page content above particles */}
+        <div className="relative z-10">
+        {/* Section 1: HERO - no section background so particles + global gradient show through like other sections */}
         <section
           ref={heroRef}
-          className="relative overflow-hidden bg-gradient-to-b from-[#06132E] via-[#0B1A3D] to-[#06132E]"
+          className="relative overflow-hidden"
         >
-          <div className="relative mx-auto max-w-7xl px-6 py-20">
+          <div className="relative mx-auto max-w-7xl px-6 pt-32 pb-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -217,20 +191,20 @@ export default function HomePage() {
             >
               <h1
                 className="text-5xl font-bold tracking-tight text-white md:text-6xl"
-                style={{ textShadow: '0 0 18px rgba(107, 158, 255, 0.35)' }}
+                style={{ textShadow: '0 0 18px rgba(91, 141, 239, 0.35)' }}
               >
-                Find your <span className="text-[#6B9EFF]">Dream College</span> with trusted guidance
+                Find your <span className="text-[#5B8DEF]">Dream College</span> with trusted guidance
               </h1>
-              <p className="mt-6 text-lg text-slate-400 md:text-xl">
+              <p className="mt-6 text-lg text-gray-300 md:text-xl">
                 Verified placements, transparent insights, and personalized support for every admission milestone.
               </p>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
                 {[
                   '100% Free for Students',
                   '37+ Partner Colleges',
                   '10,000+ Students Helped'
                 ].map((badge) => (
-                  <span key={badge} className="rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-slate-200">
+                  <span key={badge} className="rounded-full bg-[#8B5CF6]/10 text-[#A78BFA] border border-[#8B5CF6]/20 px-6 py-3 text-sm font-medium">
                     {badge}
                   </span>
                 ))}
@@ -238,245 +212,45 @@ export default function HomePage() {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="mt-12"
-            >
-              <div className="rounded-3xl border border-white/10 bg-[#06132E]/40 p-8 shadow-2xl backdrop-blur-xl">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-semibold text-white">
-                      <TrendingUp className="h-4 w-4 text-[#6B9EFF]" />
-                      Your JEE/UPCET Rank
-                    </label>
-                    <Input
-                      type="number"
-                      placeholder="Enter your rank"
-                      value={rank}
-                      onChange={(e) => setRank(e.target.value)}
-                      className="h-12 rounded-xl border border-white/10 bg-[#06132E]/50 px-4 py-3 text-white placeholder:text-slate-400 focus:border-[#3B82F6] focus:ring-2 focus:ring-blue-500/20"
-                    />
-                  </div>
-
-                  <div className="relative space-y-2" ref={branchDropdownRef}>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-white">
-                      <GraduationCap className="h-4 w-4 text-[#6B9EFF]" />
-                      Select Branch
-                    </label>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsBranchDropdownOpen(!isBranchDropdownOpen)
-                          setBranchSearchQuery('')
-                        }}
-                        className="flex h-12 w-full items-center justify-between rounded-xl border border-white/10 bg-[#06132E]/50 px-4 py-3 text-sm text-white transition focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                      >
-                        <span className="truncate font-medium">{selectedBranch}</span>
-                        <ChevronDown className={`h-4 w-4 transition-transform ${isBranchDropdownOpen ? 'rotate-180' : ''}`} />
-                      </button>
-                      {isBranchDropdownOpen && (
-                        <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#06132E] shadow-2xl">
-                          <div className="sticky top-0 z-10 border-b border-white/10 bg-[#06132E]/90 p-2 backdrop-blur">
-                            <div className="relative">
-                              <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                              <Input
-                                type="text"
-                                placeholder="Search branches..."
-                                value={branchSearchQuery}
-                                onChange={(e) => setBranchSearchQuery(e.target.value)}
-                                className="h-9 rounded-lg border border-white/10 bg-[#06132E]/60 pl-8 text-sm text-white placeholder:text-slate-400 focus:border-[#3B82F6] focus:ring-2 focus:ring-blue-500/20"
-                                onClick={(e) => e.stopPropagation()}
-                              />
-                              {branchSearchQuery && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setBranchSearchQuery('')
-                                  }}
-                                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                                >
-                                  <X className="h-4 w-4" />
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                          <div className="max-h-72 overflow-y-auto py-1">
-                            {filteredBranches.length > 0 ? (
-                              filteredBranches.map((branch) => (
-                                <button
-                                  key={branch}
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedBranch(branch)
-                                    setIsBranchDropdownOpen(false)
-                                    setBranchSearchQuery('')
-                                  }}
-                                  className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
-                                    selectedBranch === branch
-                                      ? 'bg-blue-500/20 font-semibold text-blue-200'
-                                      : 'text-slate-300 hover:bg-white/5'
-                                  }`}
-                                >
-                                  {branch}
-                                </button>
-                              ))
-                            ) : (
-                              <div className="px-4 py-3 text-sm text-slate-400">No branches found</div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="flex items-center justify-between gap-2 text-sm font-semibold text-white">
-                      <span className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-[#6B9EFF]" />
-                        Annual Budget
-                      </span>
-                      <span className="text-sm font-medium text-slate-400">
-                        ₹{budget.toLocaleString('en-IN')}
-                      </span>
-                    </label>
-                    <div className="pt-2">
-                      <input
-                        type="range"
-                        min="50000"
-                        max="500000"
-                        step="50000"
-                        value={budget}
-                        onChange={(e) => setBudget(Number(e.target.value))}
-                        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-white/10 accent-[#6B9EFF]"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="relative space-y-2" ref={stateDropdownRef}>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-white">
-                      <MapPin className="h-4 w-4 text-[#6B9EFF]" />
-                      Preferred Location
-                    </label>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsStateDropdownOpen(!isStateDropdownOpen)
-                          setStateSearchQuery('')
-                        }}
-                        className="flex h-12 w-full items-center justify-between rounded-xl border border-white/10 bg-[#06132E]/50 px-4 py-3 text-sm text-white transition focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                      >
-                        <span className="flex items-center gap-2 truncate font-medium">
-                          {selectedState || 'Select State/Region'}
-                        </span>
-                        <ChevronDown className={`h-4 w-4 transition-transform ${isStateDropdownOpen ? 'rotate-180' : ''}`} />
-                      </button>
-                      {isStateDropdownOpen && (
-                        <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#06132E] shadow-2xl">
-                          <div className="sticky top-0 z-10 border-b border-white/10 bg-[#06132E]/90 p-2 backdrop-blur">
-                            <div className="relative">
-                              <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                              <Input
-                                type="text"
-                                placeholder="Search states..."
-                                value={stateSearchQuery}
-                                onChange={(e) => setStateSearchQuery(e.target.value)}
-                                className="h-9 rounded-lg border border-white/10 bg-[#06132E]/60 pl-8 text-sm text-white placeholder:text-slate-400 focus:border-[#3B82F6] focus:ring-2 focus:ring-blue-500/20"
-                                onClick={(e) => e.stopPropagation()}
-                              />
-                              {stateSearchQuery && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setStateSearchQuery('')
-                                  }}
-                                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                                >
-                                  <X className="h-4 w-4" />
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                          <div className="max-h-72 overflow-y-auto py-1">
-                            {filteredStates.length > 0 ? (
-                              filteredStates.map((state) => (
-                                <button
-                                  key={state}
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedState(state)
-                                    setIsStateDropdownOpen(false)
-                                    setStateSearchQuery('')
-                                  }}
-                                  className={`flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm transition-colors ${
-                                    selectedState === state
-                                      ? 'bg-blue-500/20 font-semibold text-blue-200'
-                                      : 'text-slate-300 hover:bg-white/5'
-                                  }`}
-                                >
-                                  {state}
-                                </button>
-                              ))
-                            ) : (
-                              <div className="px-4 py-3 text-sm text-slate-400">No states found</div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="md:col-span-4"
-                  >
-                    <Button className="w-full rounded-xl bg-[#6B9EFF] py-4 font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-300 hover:bg-[#3B82F6] hover:shadow-xl">
-                      Find My Perfect College
-                    </Button>
-                  </motion.div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Section 2: Rank-based Quick Finder (Glassmorphism) */}
-        <section className="relative pt-10 pb-20">
-          <div className="container mx-auto px-4">
-            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
+              className="mt-10"
             >
-              <Card className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-[#06132E] transition-shadow hover:shadow-primary-glow">
-                <CardContent className="p-8 lg:p-10">
-                  <div className="mb-8 text-center">
+              <Card className="mx-auto max-w-5xl overflow-visible rounded-2xl border border-white/5 bg-[#121212] transition-shadow hover:shadow-primary-glow">
+                <CardContent className="p-6 md:p-8">
+                  <div className="text-center">
                     <h2
                       className="text-2xl font-bold text-white sm:text-3xl"
-                      style={{ textShadow: '0 0 14px rgba(107, 158, 255, 0.25)' }}
+                      style={{ textShadow: '0 0 14px rgba(91, 141, 239, 0.25)' }}
                     >
                       Rank-based Quick Finder
                     </h2>
-                    <p className="mt-2 text-slate-400">
+                    <p className="mt-2 mb-6 text-[#A1A1AA]">
                       Tailored college recommendations based on your rank and preferences.
                     </p>
                   </div>
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-slate-700 dark:text-slate-200">Your Rank</label>
                       <Input
                         type="number"
+                        min={1}
+                        max={999999}
                         placeholder="Enter JEE rank"
                         value={rank}
                         onChange={(e) => setRank(e.target.value)}
-                        className="h-11 border-white/20 bg-white/50 backdrop-blur-sm focus:ring-primary dark:bg-slate-900/50"
+                        onInput={(e) => {
+                          const target = e.currentTarget
+                          if (Number(target.value) < 1) {
+                            target.value = '1'
+                          }
+                        }}
+                        className="h-12 border-white/20 bg-white/50 backdrop-blur-sm focus:ring-primary dark:bg-slate-900/50"
                       />
                     </div>
-                    <div className="relative space-y-2" ref={branchDropdownRef}>
+                    <div className="relative z-50 space-y-2" ref={branchDropdownRef}>
                       <label className="text-sm font-semibold text-slate-700 dark:text-slate-200">Branch</label>
                       <div className="relative">
                         <button
@@ -485,16 +259,16 @@ export default function HomePage() {
                             setIsBranchDropdownOpen(!isBranchDropdownOpen)
                             setBranchSearchQuery('')
                           }}
-                          className="flex h-11 w-full items-center justify-between rounded-md border border-white/20 bg-white/50 px-3 text-sm text-slate-900 shadow-sm backdrop-blur-sm transition focus:outline-none focus:ring-2 focus:ring-primary dark:bg-slate-900/50 dark:text-white"
+                          className="flex h-12 w-full items-center justify-between rounded-md border border-white/20 bg-white/50 px-3 text-sm text-slate-900 shadow-sm backdrop-blur-sm transition focus:outline-none focus:ring-2 focus:ring-primary dark:bg-slate-900/50 dark:text-white"
                         >
                           <span className="truncate font-medium">{selectedBranch}</span>
                           <ChevronDown className={`h-4 w-4 transition-transform ${isBranchDropdownOpen ? 'rotate-180' : ''}`} />
                         </button>
                         {isBranchDropdownOpen && (
-                          <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-white/20 bg-white shadow-2xl backdrop-blur-xl dark:bg-slate-900">
+                          <div className="absolute z-50 mt-2 w-full max-h-[300px] overflow-y-auto overflow-x-hidden rounded-xl border border-white/20 bg-white shadow-2xl backdrop-blur-xl dark:bg-slate-900 scrollbar-thin scrollbar-thumb-blue-500/50 scrollbar-track-transparent">
                             <div className="sticky top-0 z-10 border-b border-slate-100 bg-white/80 p-2 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/80">
                               <div className="relative">
-                                <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A1A1AA]" />
                                 <Input
                                   type="text"
                                   placeholder="Search branches..."
@@ -509,14 +283,14 @@ export default function HomePage() {
                                       e.stopPropagation()
                                       setBranchSearchQuery('')
                                     }}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#A1A1AA] hover:text-slate-600"
                                   >
                                     <X className="h-4 w-4" />
                                   </button>
                                 )}
                               </div>
                             </div>
-                            <div className="max-h-72 overflow-y-auto py-1">
+                            <div className="py-1">
                               {filteredBranches.length > 0 ? (
                                 filteredBranches.map((branch) => (
                                   <button
@@ -537,30 +311,14 @@ export default function HomePage() {
                                   </button>
                                 ))
                               ) : (
-                                <div className="px-4 py-3 text-sm text-slate-500">No branches found</div>
+                                <div className="px-4 py-3 text-sm text-[#A1A1AA]">No branches found</div>
                               )}
                             </div>
                           </div>
                         )}
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                        Budget: ₹{budget.toLocaleString('en-IN')}
-                      </label>
-                      <div className="pt-2">
-                        <input
-                          type="range"
-                          min="50000"
-                          max="500000"
-                          step="50000"
-                          value={budget}
-                          onChange={(e) => setBudget(Number(e.target.value))}
-                          className="w-full accent-primary h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer"
-                        />
-                      </div>
-                    </div>
-                    <div className="relative space-y-2" ref={stateDropdownRef}>
+                    <div className="relative z-50 space-y-2" ref={stateDropdownRef}>
                       <label className="text-sm font-semibold text-slate-700 dark:text-slate-200">State</label>
                       <div className="relative">
                         <button
@@ -569,7 +327,7 @@ export default function HomePage() {
                             setIsStateDropdownOpen(!isStateDropdownOpen)
                             setStateSearchQuery('')
                           }}
-                          className="flex h-11 w-full items-center justify-between rounded-md border border-white/20 bg-white/50 px-3 text-sm text-slate-900 shadow-sm backdrop-blur-sm transition focus:outline-none focus:ring-2 focus:ring-primary dark:bg-slate-900/50 dark:text-white"
+                          className="flex h-12 w-full items-center justify-between rounded-md border border-white/20 bg-white/50 px-3 text-sm text-slate-900 shadow-sm backdrop-blur-sm transition focus:outline-none focus:ring-2 focus:ring-primary dark:bg-slate-900/50 dark:text-white"
                         >
                           <span className="flex items-center gap-2 truncate font-medium">
                             <MapPin className="h-4 w-4 text-primary" />
@@ -578,10 +336,10 @@ export default function HomePage() {
                           <ChevronDown className={`h-4 w-4 transition-transform ${isStateDropdownOpen ? 'rotate-180' : ''}`} />
                         </button>
                         {isStateDropdownOpen && (
-                          <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-white/20 bg-white shadow-2xl backdrop-blur-xl dark:bg-slate-900">
+                          <div className="absolute z-50 mt-2 w-full max-h-[300px] overflow-y-auto overflow-x-hidden rounded-xl border border-white/20 bg-white shadow-2xl backdrop-blur-xl dark:bg-slate-900 scrollbar-thin scrollbar-thumb-blue-500/50 scrollbar-track-transparent">
                             <div className="sticky top-0 z-10 border-b border-slate-100 bg-white/80 p-2 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/80">
                               <div className="relative">
-                                <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A1A1AA]" />
                                 <Input
                                   type="text"
                                   placeholder="Search states..."
@@ -596,14 +354,14 @@ export default function HomePage() {
                                       e.stopPropagation()
                                       setStateSearchQuery('')
                                     }}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#A1A1AA] hover:text-slate-600"
                                   >
                                     <X className="h-4 w-4" />
                                   </button>
                                 )}
                               </div>
                             </div>
-                            <div className="max-h-72 overflow-y-auto py-1">
+                            <div className="py-1">
                               {filteredStates.length > 0 ? (
                                 filteredStates.map((state) => (
                                   <button
@@ -625,7 +383,7 @@ export default function HomePage() {
                                   </button>
                                 ))
                               ) : (
-                                <div className="px-4 py-3 text-sm text-slate-500">No states found</div>
+                                <div className="px-4 py-3 text-sm text-[#A1A1AA]">No states found</div>
                               )}
                             </div>
                           </div>
@@ -633,14 +391,17 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-slate-100 pt-8 dark:border-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-                      <span className="text-primary">37+</span> verified engineering colleges mapped.
-                    </p>
-                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <Button size="xl" className="w-full bg-slate-900 text-white shadow-xl hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 sm:w-auto">
-                        <Search className="mr-2 h-5 w-5" />
-                        Find My Perfect College
+                  <div className="mt-4 pt-4">
+                    <motion.div
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="flex justify-center"
+                    >
+                      <Button
+                        size="xl"
+                        className="w-full max-w-md h-14 bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white text-lg font-semibold shadow-xl hover:shadow-xl"
+                      >
+                        Find My College
                       </Button>
                     </motion.div>
                   </div>
@@ -650,16 +411,17 @@ export default function HomePage() {
           </div>
         </section>
 
+
         <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="mx-auto max-w-3xl text-center">
               <h2
                 className="text-3xl font-semibold text-white sm:text-4xl"
-                style={{ textShadow: '0 0 14px rgba(107, 158, 255, 0.25)' }}
+                style={{ textShadow: '0 0 14px rgba(91, 141, 239, 0.25)' }}
               >
                 A premium guidance suite for every step
               </h2>
-              <p className="mt-4 text-base text-slate-400">
+              <p className="mt-4 text-base text-[#A1A1AA]">
                 Unlock verified insights, expert support, and immersive campus experiences tailored to your goals.
               </p>
             </div>
@@ -694,13 +456,13 @@ export default function HomePage() {
                   }}
                   whileHover={{ y: -5 }}
                 >
-                  <Card className="h-full border border-white/10 bg-[#06132E] transition-shadow hover:shadow-primary-glow">
+                  <Card className="h-full border border-white/10 bg-white/5 backdrop-blur-xl transition-shadow hover:shadow-primary-glow">
                     <CardContent className="p-6">
                       <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                         {feature.icon}
                       </div>
                       <h3 className="text-lg font-semibold text-white">{feature.title}</h3>
-                      <p className="mt-2 text-sm text-slate-400">{feature.description}</p>
+                      <p className="mt-2 text-sm text-[#A1A1AA]">{feature.description}</p>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -709,21 +471,21 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="py-20 bg-gradient-to-b from-[#06132E] via-[#0B1A3D] to-[#06132E]">
+        <section className="py-20 bg-gradient-to-b from-[#0F0F0F] to-[#0A0A0A]">
           <div className="container mx-auto px-4">
             <div className="flex flex-col items-center justify-between gap-6 text-center lg:flex-row lg:text-left">
               <div>
                 <h2
                   className="text-3xl font-semibold text-white"
-                  style={{ textShadow: '0 0 14px rgba(107, 158, 255, 0.25)' }}
+                  style={{ textShadow: '0 0 14px rgba(91, 141, 239, 0.25)' }}
                 >
                   Featured colleges
                 </h2>
-                <p className="mt-2 text-base text-slate-400">
+                <p className="mt-2 text-base text-[#A1A1AA]">
                   Handpicked institutions with standout placements and student outcomes.
                 </p>
               </div>
-              <Button asChild size="lg" variant="outline" className="border-white/10 bg-[#06132E]/50 text-white hover:bg-white/5">
+              <Button asChild size="lg" variant="outline" className="border-white/5 bg-[#121212] text-white hover:bg-white/5">
                 <Link href="/colleges">View all colleges</Link>
               </Button>
             </div>
@@ -739,7 +501,7 @@ export default function HomePage() {
                 >
                   <CollegeCard 
                     college={college} 
-                    className="border border-white/10 bg-[#06132E] transition-shadow hover:shadow-primary-glow"
+                    className="border border-white/5 bg-[#121212] transition-shadow hover:shadow-primary-glow"
                   />
                 </motion.div>
               ))}
@@ -758,11 +520,11 @@ export default function HomePage() {
             >
               <h2
                 className="text-3xl font-semibold text-white"
-                style={{ textShadow: '0 0 14px rgba(107, 158, 255, 0.25)' }}
+                style={{ textShadow: '0 0 14px rgba(91, 141, 239, 0.25)' }}
               >
                 How it works
               </h2>
-              <p className="mt-3 text-base text-slate-400">
+              <p className="mt-3 text-base text-[#A1A1AA]">
                 Simple steps to move from shortlist to admission.
               </p>
             </motion.div>
@@ -780,13 +542,13 @@ export default function HomePage() {
                   viewport={{ once: true }}
                   whileHover={{ y: -5 }}
                 >
-                  <Card className="h-full border border-white/10 bg-[#06132E] transition-shadow hover:shadow-primary-glow">
+                  <Card className="h-full border border-white/5 bg-[#121212] transition-shadow hover:shadow-primary-glow">
                     <CardContent className="p-6">
                       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                         {step.icon}
                       </div>
                       <h3 className="text-lg font-semibold text-white">{step.title}</h3>
-                      <p className="mt-2 text-sm text-slate-400">{step.description}</p>
+                      <p className="mt-2 text-sm text-[#A1A1AA]">{step.description}</p>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -795,7 +557,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="py-20 bg-gradient-to-b from-[#06132E] via-[#0B1A3D] to-[#06132E]">
+        <section className="py-20 bg-gradient-to-b from-[#0F0F0F] to-[#0A0A0A]">
           <div className="container mx-auto px-4">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -836,7 +598,7 @@ export default function HomePage() {
                   viewport={{ once: true }}
                   whileHover={{ y: -5 }}
                 >
-                  <Card className="h-full border border-white/10 bg-[#06132E] text-white transition-shadow hover:shadow-primary-glow">
+                  <Card className="h-full border border-white/5 bg-[#121212] text-white transition-shadow hover:shadow-primary-glow">
                     <CardContent className="p-6">
                       <div className="mb-4 flex items-center gap-2">
                         {[...Array(testimonial.rating)].map((_, i) => (
@@ -844,7 +606,7 @@ export default function HomePage() {
                         ))}
                       </div>
                       <p className="text-sm leading-relaxed text-white/80">&ldquo;{testimonial.text}&rdquo;</p>
-                      <div className="mt-6 border-t border-white/10 pt-4">
+                      <div className="mt-6 border-t border-white/5 pt-4">
                         <p className="text-base font-semibold text-white">{testimonial.name}</p>
                         <p className="text-xs text-white/60">{testimonial.college}</p>
                       </div>
@@ -864,7 +626,7 @@ export default function HomePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <Card className="overflow-hidden border border-white/10 bg-black transition-shadow hover:shadow-primary-glow">
+              <Card className="overflow-hidden border border-white/5 bg-[#121212] transition-shadow hover:shadow-primary-glow">
                 <CardContent className="flex flex-col items-start justify-between gap-8 p-10 md:flex-row md:items-center">
                   <div className="max-w-2xl">
                     <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
@@ -897,6 +659,7 @@ export default function HomePage() {
             </motion.div>
           </div>
         </section>
+        </div>
       </div>
     </>
   )
