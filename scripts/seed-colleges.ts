@@ -14,10 +14,32 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholde
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+type SeedCollege = {
+  name: string
+  slug: string
+  city: string
+  state: string
+  estd?: number
+  affiliation?: string
+  approvals?: string[]
+  campusArea?: string
+  intake?: number
+  rating?: number
+  highestPackage?: string
+  averagePackage?: string
+  placementPercent?: string
+  notableRecruiters?: string[]
+  description?: string
+}
+
+type SeedPayload = {
+  colleges: SeedCollege[]
+}
+
 
 async function main() {
   const collegesDataPath = join(__dirname, '../lib/data/colleges-seed.json')
-  const collegesData = await import(collegesDataPath, { assert: { type: 'json' } }).then(m => m.default)
+  const collegesData = await import(collegesDataPath, { assert: { type: 'json' } }).then(m => m.default as SeedPayload)
 
 
   console.log('Starting college seed...')
@@ -37,7 +59,7 @@ async function main() {
 
 
     for (let i = 0; i < collegesData.colleges.length; i += batchSize) {
-      const batch = collegesData.colleges.slice(i, i + batchSize).map((college: any) => ({
+      const batch = collegesData.colleges.slice(i, i + batchSize).map((college) => ({
         name: college.name,
         slug: college.slug,
         city: college.city,

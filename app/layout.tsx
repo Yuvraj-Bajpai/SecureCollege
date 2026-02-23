@@ -4,8 +4,8 @@ import './globals.css'
 import { SITE_CONFIG } from '@/lib/constants'
 import { Header } from '@/components/common/Header'
 import { Footer } from '@/components/common/Footer'
-import { Providers } from './providers'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { BookingModalProvider } from '@/contexts/BookingModalContext'
+import { BookCounsellingModal } from '@/components/common/BookCounsellingModal'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -72,16 +72,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${poppins.variable} bg-[#0A0A0A] text-white`}>
       <body className={inter.className}>
-        <Providers>
+        <BookingModalProvider>
           <Header />
-          <ThemeToggle />
           <main id="main-content" className="min-h-screen pt-0">
             {children}
           </main>
           <Footer />
-        </Providers>
+          <BookCounsellingModal />
+        </BookingModalProvider>
       </body>
     </html>
   )

@@ -25,13 +25,43 @@ interface FilterState {
   special: string[]
 }
 
-interface Props {
-  initialColleges: CollegeCardData[]
+interface SortOption {
+  value: string
+  label: string
 }
 
-export function CollegesClient({ initialColleges }: Props) {
+interface Props {
+  initialColleges: CollegeCardData[]
+  heading?: string
+  breadcrumbLabel?: string
+  sortOptions?: SortOption[]
+  defaultSort?: string
+  profileBasePath?: string
+  footerLabel?: string
+  stickySidebar?: boolean
+}
+
+const defaultSortOptions: SortOption[] = [
+  { value: 'relevance', label: 'Relevance' },
+  { value: 'highest-rating', label: 'Highest Rating' },
+  { value: 'lowest-fees', label: 'Lowest Fees' },
+  { value: 'nirf-rank', label: 'NIRF Rank' }
+]
+
+export function CollegesClient({ 
+  initialColleges, 
+  heading = 'Private Colleges in India',
+  breadcrumbLabel = 'Colleges',
+  sortOptions,
+  defaultSort,
+  profileBasePath = '/colleges',
+  footerLabel = 'View Details',
+  stickySidebar = false
+}: Props) {
+  const resolvedSortOptions = sortOptions && sortOptions.length > 0 ? sortOptions : defaultSortOptions
+  const initialSort = defaultSort || resolvedSortOptions[0]?.value || 'relevance'
   const [searchQuery, setSearchQuery] = useState('')
-  const [sortBy, setSortBy] = useState('relevance')
+  const [sortBy, setSortBy] = useState(initialSort)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [currentPage, setCurrentPage] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
@@ -88,6 +118,12 @@ export function CollegesClient({ initialColleges }: Props) {
   const sortedColleges = useMemo(() => {
     const sorted = [...filteredColleges]
     switch (sortBy) {
+      case 'highest-placement':
+        return sorted.sort((a, b) => {
+          const aNum = a.placementPercent ? parseFloat(a.placementPercent.replace(/[^0-9.]/g, '')) : 0
+          const bNum = b.placementPercent ? parseFloat(b.placementPercent.replace(/[^0-9.]/g, '')) : 0
+          return bNum - aNum
+        })
       case 'highest-rating':
         return sorted.sort((a, b) => b.rating - a.rating)
       case 'lowest-fees':
@@ -122,7 +158,7 @@ export function CollegesClient({ initialColleges }: Props) {
           <div className="flex items-center gap-2 text-sm text-[#A1A1AA] mb-4">
             <Link href="/" className="hover:text-primary transition-colors">Home</Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-white font-medium">Colleges</span>
+            <span className="text-white font-medium">{breadcrumbLabel}</span>
           </div>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
@@ -130,7 +166,7 @@ export function CollegesClient({ initialColleges }: Props) {
                 className="text-3xl lg:text-4xl font-bold text-white mb-2"
                 style={{ textShadow: '0 0 14px rgba(91, 141, 239, 0.25)' }}
               >
-                Engineering Colleges in India
+                {heading}
               </h1>
               <div className="flex items-center gap-4 text-sm text-[#A1A1AA]">
                 <span className="flex items-center gap-1">
@@ -158,10 +194,11 @@ export function CollegesClient({ initialColleges }: Props) {
               onChange={(e) => setSortBy(e.target.value)}
               className="h-11 px-4 rounded-full border border-white/15 bg-white/5 text-sm text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              <option className="text-slate-900" value="relevance">Sort: Relevance</option>
-              <option className="text-slate-900" value="highest-rating">Highest Rating</option>
-              <option className="text-slate-900" value="lowest-fees">Lowest Fees</option>
-              <option className="text-slate-900" value="nirf-rank">NIRF Rank</option>
+              {resolvedSortOptions.map((option) => (
+                <option key={option.value} className="text-slate-900" value={option.value}>
+                  Sort: {option.label}
+                </option>
+              ))}
             </select>
             <div className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 p-1 backdrop-blur-sm">
               <button
@@ -190,7 +227,10 @@ export function CollegesClient({ initialColleges }: Props) {
       </div>
       <div className="container mx-auto px-4 pt-14 pb-16">
         <div className="mt-6 lg:mt-8 flex flex-col lg:flex-row gap-8">
-          <aside className="w-full lg:w-80 flex-shrink-0">
+          <aside className={cn(
+            "w-full lg:w-80 flex-shrink-0",
+            stickySidebar ? "lg:sticky lg:top-28 h-fit" : ""
+          )}>
             <FilterSidebar
               filters={filters}
               onChange={setFilters}
@@ -221,7 +261,11 @@ export function CollegesClient({ initialColleges }: Props) {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: idx * 0.05 }}
                     >
-                      <CollegeCard college={college} />
+                      <CollegeCard 
+                        college={college} 
+                        hrefBase={profileBasePath}
+                        footerLabel={footerLabel}
+                      />
                     </motion.div>
                   ))}
                 </div>

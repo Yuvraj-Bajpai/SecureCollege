@@ -28,9 +28,16 @@ export interface CollegeCardData {
 interface CollegeCardProps {
   college: CollegeCardData
   className?: string
+  hrefBase?: string
+  footerLabel?: string
 }
 
-export function CollegeCard({ college, className = '' }: CollegeCardProps) {
+export function CollegeCard({ 
+  college, 
+  className = '', 
+  hrefBase = '/colleges',
+  footerLabel = 'View Details'
+}: CollegeCardProps) {
   return (
     <Card 
       className={cn(
@@ -39,23 +46,15 @@ export function CollegeCard({ college, className = '' }: CollegeCardProps) {
         className
       )}
     >
-      <Link href={`/colleges/${college.id}`}>
+      <Link href={`${hrefBase}/${college.id}`}>
         <CardHeader className="pb-4">
           <div className="flex items-start gap-4">
-            <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-800">
-              {/* Light theme logo */}
-              <Image
-                src={college.logo || '/images/logo.png'}
-                alt={`${college.name} logo`}
-                fill
-                className="object-contain p-2 dark:hidden transition-transform duration-500 group-hover:scale-110"
-              />
-              {/* Dark theme logo */}
+            <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-800">
               <Image
                 src={college.logo || '/images/logo-dark.png'}
                 alt={`${college.name} logo`}
                 fill
-                className="object-contain p-2 hidden dark:block transition-transform duration-500 group-hover:scale-110"
+                className="object-contain p-2 transition-transform duration-500 group-hover:scale-110"
               />
             </div>
             <div className="flex-1 min-w-0">
@@ -128,7 +127,7 @@ export function CollegeCard({ college, className = '' }: CollegeCardProps) {
         <CardFooter className="pt-0">
           <div className="w-full border-t border-border pt-4">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-text-secondary">View Details</span>
+              <span className="text-text-secondary">{footerLabel}</span>
               <span className="text-primary font-medium group-hover:translate-x-1 transition-transform inline-block">
                 →
               </span>

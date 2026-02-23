@@ -23,7 +23,7 @@ export function Header() {
   return (
     <header
       className={cn(
-        "fixed top-0 z-50 w-full transition-all duration-300",
+        "fixed top-1 z-50 w-full transition-all duration-300",
         scrolled 
           ? "bg-black/60 backdrop-blur-md border-b border-white/10 shadow-lg" 
           : "bg-transparent border-b border-transparent"
@@ -45,7 +45,7 @@ export function Header() {
                   "hover:text-primary hover:scale-105",
                   pathname === link.href
                     ? "text-primary after:absolute after:bottom-[-8px] after:left-0 after:w-full after:h-[3px] after:bg-gradient-to-r after:from-primary-500 after:to-primary-700 after:rounded-full"
-                    : "text-gray-900 dark:text-gray-100"
+                    : "text-gray-100"
                 )}
               >
                 {link.label}
@@ -60,7 +60,7 @@ export function Header() {
               size="lg"
               className="bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
             >
-              <Link href="/find-college">
+              <Link href="/students/colleges">
                 <Search className="w-4 h-4 mr-2" />
                 Find My College
               </Link>
@@ -69,9 +69,9 @@ export function Header() {
               <Link href="/login">Login</Link>
             </Button>
             <Button
-              variant="secondary"
               asChild
-              className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 shadow-md hover:shadow-lg"
+              size="lg"
+              className="bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
             >
               <Link href="/signup">Sign Up</Link>
             </Button>
@@ -79,7 +79,7 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+            className="lg:hidden p-2 hover:bg-gray-800 rounded-md"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -104,7 +104,7 @@ export function Header() {
                   "text-base font-medium py-2 px-4 rounded-md transition-colors",
                   pathname === link.href
                     ? "bg-primary-100 text-primary"
-                    : "text-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
+                    : "text-white hover:bg-gray-800"
                 )}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -117,7 +117,7 @@ export function Header() {
                 size="lg"
                 className="bg-primary hover:bg-primary-600 text-white w-full"
               >
-                <Link href="/find-college">Find My College</Link>
+                <Link href="/students/colleges">Find My College</Link>
               </Button>
               <Button variant="outline" asChild className="w-full">
                 <Link href="/login">Login</Link>

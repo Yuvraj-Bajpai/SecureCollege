@@ -6,18 +6,25 @@ import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { supabase } from '@/lib/supabase'
 import { Logo } from '@/components/common/Logo'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
+
+const ParticleBackground = dynamic(
+  () => import('@/components/common/ParticleBackground').then((mod) => mod.ParticleBackground),
+  { ssr: false }
+)
 
 export default function LoginPage() {
   return (
     <div className="relative min-h-screen bg-[#0A0A0A] bg-gradient-to-b from-[#0F0F0F] to-[#0A0A0A] text-white overflow-hidden">
+      <ParticleBackground />
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 inset-x-0 h-[32rem] bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(91,141,239,0.18),transparent)] blur-3xl" />
         <div className="absolute top-0 right-1/4 h-80 w-80 rounded-full bg-[#5B8DEF]/12 blur-3xl" />
         <div className="absolute bottom-[-15%] left-[-10%] h-80 w-80 rounded-full bg-indigo-500/15 blur-[120px]" />
       </div>
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12">
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 pt-24 pb-12">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -62,19 +69,9 @@ export default function LoginPage() {
               redirectTo={`${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`}
               view="sign_in"
             />
-
-            <div className="mt-6 text-center">
-              <p className="text-sm text-[#A1A1AA]">
-                Don&apos;t have an account?{' '}
-                <Link href="/signup" className="text-primary hover:text-primary-600 font-medium">
-                  Sign up
-                </Link>
-              </p>
-            </div>
           </div>
         </motion.div>
       </div>
     </div>
   )
 }
-

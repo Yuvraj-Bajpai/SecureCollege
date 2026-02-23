@@ -7,6 +7,17 @@ import { Button } from '@/components/ui/button'
 import { CollegeCard, type CollegeCardData } from '@/components/common/CollegeCard'
 import { supabase } from '@/lib/supabase'
 
+type CollegeRow = {
+  name: string | null
+  slug: string | null
+  city: string | null
+  state: string | null
+  rating: number | string | null
+  highestpackage: string | null
+  averagepackage: string | null
+  placementpercent: string | null
+}
+
 export default function CollegesSection() {
   const [items, setItems] = useState<CollegeCardData[]>([])
   const [loading, setLoading] = useState(true)
@@ -26,11 +37,11 @@ export default function CollegesSection() {
         setLoading(false)
         return
       }
-      const mapped: CollegeCardData[] = (data || []).map((c: any) => ({
-        id: c.slug || c.name,
-        name: c.name,
-        city: c.city,
-        state: c.state,
+      const mapped: CollegeCardData[] = (data || []).map((c: CollegeRow) => ({
+        id: c.slug || c.name || 'unknown',
+        name: c.name || 'Unknown College',
+        city: c.city || 'Unknown City',
+        state: c.state || 'Unknown State',
         category: 'Engineering',
         logo: '/images/logo.png',
         rating: Number(c.rating) || 0,
@@ -49,20 +60,20 @@ export default function CollegesSection() {
   }, [])
 
   return (
-    <section className="py-16 bg-blue-50 dark:bg-gray-900" data-animate>
+    <section className="py-16 bg-gray-900" data-animate>
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-            Top Engineering Colleges in India
+          <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-white">
+            Top Private Colleges in India
           </h2>
-          <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
-            Discover the best engineering colleges ranked by students, placements, and infrastructure
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            Discover the best private colleges ranked by students, placements, and infrastructure — across B.Tech, MBA, BBA, Law, Design and more
           </p>
         </div>
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-64 bg-gray-200 animate-pulse rounded-lg" />
+              <div key={i} className="h-64 bg-white/5 animate-pulse rounded-lg" />
             ))}
           </div>
         ) : (

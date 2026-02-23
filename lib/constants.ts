@@ -1,10 +1,10 @@
 export const SITE_CONFIG = {
   name: "Secure College",
   tagline: "Your Gateway to Dream Colleges",
-  description: "Find and compare top engineering colleges across India with deep insights, virtual tours, and expert guidance.",
+  description: "Find and compare top private colleges across India with deep insights, virtual tours, and expert guidance — for every course, every rank.",
   url: "https://securecollege.in",
-  contactEmail: "support@securecollege.in",
-  phone: "+91-XXXXXXXXXX",
+  contactEmail: "securecollege6@gmail.com",
+  phone: "+91 90441 43686",
   brandColors: {
     primary: "#6B9EFF", // Logo blue
     secondary: "#000000", // Logo black
@@ -14,11 +14,10 @@ export const SITE_CONFIG = {
 
 export const NAVIGATION_LINKS = [
   { label: "Home", href: "/" },
-  { label: "Explore Colleges", href: "/colleges" },
-  { label: "Compare", href: "/compare" },
-  { label: "Virtual Tours", href: "/virtual-tours" },
+  { label: "Students", href: "/students" },
   { label: "Premium", href: "/premium" },
-  { label: "Resources", href: "/resources" },
+  { label: "About", href: "/about" },
+  { label: "Partner With Us", href: "/colleges" },
 ]
 
 export const FEATURED_STATES = [

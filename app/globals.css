@@ -40,30 +40,36 @@
     --color-error-red: #EF4444;
     --color-error-light: #FEE2E2;
 
-    /* Semantic Color Tokens (Light Mode) */
-    --color-background: #FFFFFF;
-    --color-surface: #FAFAFA;
-    --color-text: #000000;
-    --color-text-secondary: #525252;
+    --background: 0 0% 5%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 10%;
+    --primary: 219 100% 71%;
+    --border: 0 0% 20%;
+
+    /* Semantic Color Tokens */
+    --color-background: #0A0A0A;
+    --color-surface: #1A1A1A;
+    --color-text: #FFFFFF;
+    --color-text-secondary: #B0B0B0;
     --color-primary: #6B9EFF; /* Logo Blue */
-    --color-primary-hover: #4A7FFF;
-    --color-primary-active: #2E5FE6;
-    --color-primary-light: #E0EBFF;
-    --color-border: #E5E5E5;
-    --color-border-strong: #D4D4D4;
+    --color-primary-hover: #8FB3FF;
+    --color-primary-active: #4A7FFF;
+    --color-primary-light: #1E1E2E;
+    --color-border: #2A2A2A;
+    --color-border-strong: #3A3A3A;
 
     /* Button specific */
     --color-btn-primary-bg: #6B9EFF;
     --color-btn-primary-text: #FFFFFF;
     --color-btn-primary-hover: #4A7FFF;
-    --color-btn-secondary-bg: #F5F5F5;
-    --color-btn-secondary-text: #000000;
-    --color-btn-secondary-hover: #E5E5E5;
+    --color-btn-secondary-bg: #2A2A2A;
+    --color-btn-secondary-text: #FFFFFF;
+    --color-btn-secondary-hover: #3A3A3A;
 
     /* Card & Component Colors */
-    --color-card-bg: #FFFFFF;
-    --color-card-border: #E5E5E5;
-    --color-card-hover-shadow: rgba(107, 158, 255, 0.15);
+    --color-card-bg: #1A1A1A;
+    --color-card-border: #2A2A2A;
+    --color-card-hover-shadow: rgba(107, 158, 255, 0.3);
 
     /* Status Colors */
     --color-success: #10B981;
@@ -135,33 +141,6 @@
     --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Dark Mode Colors - Complete Theme Profile */
-  .dark {
-    --background: 0 0% 5%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 10%;
-    --primary: 219 100% 71%;
-    --border: 0 0% 20%;
-
-    /* Comprehensive Dark Mode Colors */
-    --color-background: #0A0A0A;
-    --color-surface: #1A1A1A;
-    --color-text: #FFFFFF;
-    --color-text-secondary: #B0B0B0;
-    --color-primary: #6B9EFF;
-    --color-primary-hover: #8FB3FF;
-    --color-primary-active: #4A7FFF;
-    --color-primary-light: #1E1E2E;
-    --color-border: #2A2A2A;
-    --color-border-strong: #3A3A3A;
-    --color-card-bg: #1A1A1A;
-    --color-card-border: #2A2A2A;
-    --color-btn-secondary-bg: #2A2A2A;
-    --color-btn-secondary-text: #FFFFFF;
-    --color-btn-secondary-hover: #3A3A3A;
-    --color-card-hover-shadow: rgba(107, 158, 255, 0.3);
-  }
-
   * {
     @apply border-border;
   }
@@ -214,6 +193,10 @@
 
   .shadow-primary-glow {
     box-shadow: 0 4px 24px rgba(107, 158, 255, 0.2);
+  }
+  
+  .supabase-auth-ui_ui-anchor {
+    display: none !important;
   }
   
   /* Blob Animation */
@@ -302,4 +285,3 @@
   }
 
 }
-

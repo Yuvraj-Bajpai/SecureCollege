@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
+import { useState, type FormEvent } from 'react'
 import { Logo } from '@/components/common/Logo'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -14,6 +17,7 @@ import {
   Check
 } from 'lucide-react'
 import { ParticleBackground as ParticleBackgroundType } from '@/components/common/ParticleBackground'
+import { supabase } from '@/lib/supabase'
 
 const ParticleBackground = dynamic(
   () =>
@@ -24,35 +28,84 @@ const ParticleBackground = dynamic(
 )
 
 export function Footer() {
+  const [email, setEmail] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setErrorMsg(null)
+    setIsSuccess(false)
+
+    if (!email.trim()) {
+      setErrorMsg('Please enter your email.')
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const { error } = await supabase.from('newsletter_subscribers').insert({
+        email: email.trim()
+      })
+
+      if (error) {
+        if (error.code === '23505') {
+          setErrorMsg("You're already subscribed!")
+        } else {
+          setErrorMsg('Something went wrong. Please try again.')
+        }
+      } else {
+        setIsSuccess(true)
+        setEmail('')
+      }
+    } catch {
+      setErrorMsg('Something went wrong. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
-    <footer className="relative border-t border-white/10 bg-[#0A0A0A] bg-gradient-to-b from-[#0F0F0F] to-[#0A0A0A] text-white overflow-hidden">
+    <footer className="relative border-t border-white/10 text-white overflow-hidden">
       <ParticleBackground />
       {/* Newsletter Section */}
-      <div className="border-b border-white/10 py-12 bg-transparent">
+      <div className="border-b border-white/10 py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-2xl lg:text-3xl font-bold text-white mb-3">
               Stay Updated with Admission Alerts
             </h2>
-            <p className="text-sm text-[#A1A1AA] mb-6">
+            <p className="text-sm text-[#A1A1AA] mb-8">
               Get latest cutoffs, scholarships & college news delivered to your inbox
             </p>
-            <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 h-12 bg-white/5 border-white/20 text-white placeholder:text-gray-400 backdrop-blur-md focus-visible:ring-2 focus-visible:ring-primary"
+                className="flex-1 h-12 bg-white/5 border-white/20 text-white placeholder:text-gray-300 placeholder:font-semibold backdrop-blur-md focus-visible:ring-2 focus-visible:ring-primary"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
               />
               <Button
                 type="submit"
                 className="h-12 px-8 bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl"
+                disabled={isLoading}
               >
-                Subscribe
+                {isLoading ? 'Subscribing...' : 'Subscribe'}
               </Button>
             </form>
-            <p className="text-xs text-[#A1A1AA] mt-3">
-              Join 10,000+ students getting admission updates
-            </p>
+            {isSuccess && !errorMsg && (
+              <p className="mt-3 text-sm text-emerald-400">
+                Subscribed successfully!
+              </p>
+            )}
+            {errorMsg && (
+              <p className="mt-3 text-sm text-red-400">
+                {errorMsg}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -64,11 +117,11 @@ export function Footer() {
           <div>
             <Logo size="xl" className="mb-6" />
             <p className="text-sm text-text-secondary mb-6 max-w-xs">
-              Helping students find their perfect engineering college with complete transparency and insider insights.
+              Helping students find their perfect college across every course with complete transparency and insider insights.
             </p>
             
             {/* Trust Badge */}
-            <div className="inline-flex items-center gap-2 bg-primary-100 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
               <Check className="w-4 h-4" />
               100% Free for Students
             </div>
