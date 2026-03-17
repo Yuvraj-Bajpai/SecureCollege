@@ -59,7 +59,7 @@ export default function PremiumPage() {
                   variant="outline"
                   className="w-full sm:w-auto h-12 px-8 border-white/20 bg-white/5 text-white hover:bg-white/10"
                 >
-                  <Link href="/students/colleges">Explore Colleges</Link>
+                  <Link href="/colleges">Explore Colleges</Link>
                 </Button>
               </div>
             </CardContent>

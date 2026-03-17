@@ -17,7 +17,7 @@ export const NAVIGATION_LINKS = [
   { label: "Students", href: "/students" },
   { label: "Premium", href: "/premium" },
   { label: "About", href: "/about" },
-  { label: "Partner With Us", href: "/colleges" },
+  { label: "Partner With Us", href: "/partner" },
 ]
 
 export const FEATURED_STATES = [

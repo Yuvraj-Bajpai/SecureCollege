@@ -175,12 +175,10 @@ export function Footer() {
             <h3 className="text-base font-semibold text-primary mb-4">Resources</h3>
             <ul className="space-y-3">
               {[
-                { label: 'Admission Guides', href: '/guides' },
-                { label: 'Scholarship Finder', href: '/scholarships' },
-                { label: 'Rank Predictor', href: '/rank-predictor' },
                 { label: 'College Reviews', href: '/reviews' },
                 { label: 'Contact Us', href: '/contact' },
                 { label: 'About Us', href: '/about' },
+                { label: 'Partner With Us', href: '/partner' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

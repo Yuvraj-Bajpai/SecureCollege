@@ -71,23 +71,23 @@ export default function HomePage() {
                   </p>
                 </div>
                 <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
                     <Button
                       asChild
                       size="xl"
-                      className="h-14 px-10 bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white text-lg font-semibold shadow-xl hover:shadow-xl"
+                      className="h-12 sm:h-14 px-6 sm:px-10 bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white text-base sm:text-lg font-semibold shadow-xl hover:shadow-xl w-full sm:w-auto"
                     >
                       <Link href="/students">Start My College Search</Link>
                     </Button>
                   </motion.div>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
                     <Button
                       asChild
                       size="xl"
                       variant="outline"
-                      className="h-14 px-10 border-white/20 bg-white/5 text-white hover:bg-white/10"
+                      className="h-12 sm:h-14 px-6 sm:px-10 border-white/20 bg-white/5 text-white hover:bg-white/10 w-full sm:w-auto"
                     >
-                      <Link href="/colleges">Become Our College Partner</Link>
+                      <Link href="/partner">Become Our College Partner</Link>
                     </Button>
                   </motion.div>
                 </div>
@@ -100,7 +100,7 @@ export default function HomePage() {
                       Our Impact
                     </h2>
                   </div>
-                  <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+                  <div className="mt-6 grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
                     {[
                       {
                         icon: GraduationCap,
@@ -119,18 +119,18 @@ export default function HomePage() {
                         key={item.label}
                         className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-xl transition-shadow hover:shadow-primary-glow"
                       >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                          <item.icon className="h-5 w-5" />
+                        <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                          <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
                         </div>
-                        <p className="text-sm lg:text-base font-medium text-white lg:whitespace-nowrap">{item.label}</p>
+                        <p className="text-xs sm:text-sm lg:text-base font-medium text-white lg:whitespace-nowrap">{item.label}</p>
                       </div>
                     ))}
                   </div>
                 </div>
                 <div className="mt-8 w-full">
-                  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-8 py-6 backdrop-blur-xl">
-                    <div className="mr-3">
-                      <p className="text-base text-white">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-6 py-6 sm:px-8 backdrop-blur-xl">
+                    <div className="text-center sm:text-left sm:mr-3">
+                      <p className="text-sm sm:text-base text-white">
                         Complete Admission Support — College Selection, Application Process, Hostel Coordination,
                         Scholarships, and More
                       </p>
@@ -138,7 +138,7 @@ export default function HomePage() {
                     <Button
                       size="xl"
                       onClick={openModal}
-                      className="shrink-0 h-12 px-10 text-base bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl"
+                      className="shrink-0 h-10 sm:h-12 px-6 sm:px-8 text-sm sm:text-base bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl w-full sm:w-auto"
                     >
                       Book Free Counseling
                     </Button>
@@ -199,16 +199,16 @@ export default function HomePage() {
                     whileHover={{ y: -3 }}
                   >
                     <PremiumCard className="h-full transition-shadow hover:shadow-primary-glow">
-                      <CardContent className="flex items-center gap-6 p-6">
-                        <div className="flex w-28 flex-col items-center gap-2">
+                      <CardContent className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 p-6">
+                        <div className="flex sm:w-28 flex-col items-center gap-2">
                           <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-base font-semibold text-white">
                             {idx + 1}
                           </div>
-                          <h3 className="text-base md:text-lg font-semibold text-white">
+                          <h3 className="text-base md:text-lg font-semibold text-white text-center sm:text-left">
                             {step.title}
                           </h3>
                         </div>
-                        <p className="flex-1 text-sm md:text-base text-[#A1A1AA] text-left">
+                        <p className="flex-1 text-sm md:text-base text-[#A1A1AA] text-center sm:text-left">
                           {step.description}
                         </p>
                       </CardContent>

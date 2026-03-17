@@ -16,6 +16,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'localhost' },
       { protocol: 'https', hostname: 'securecollege.in' },
       { protocol: 'https', hostname: 'www.securecollege.in' },
+      { protocol: 'https', hostname: 'cdn.securecollege.in' },
+      { protocol: 'https', hostname: 'cfgtwyywgrhihqjkoilt.supabase.co' },
     ],
     unoptimized: false,
     formats: ['image/avif', 'image/webp'],

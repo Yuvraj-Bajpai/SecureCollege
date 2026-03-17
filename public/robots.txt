@@ -1,0 +1,29 @@
+# Robots.txt for Secure College
+# https://securecollege.in
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://securecollege.in/sitemap.xml
+
+# Crawl delay (be respectful)
+Crawl-delay: 1
+
+# Disallow admin and API pages
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /login/
+Disallow: /signup/
+
+# Allow search engines to index all public content
+Allow: /students/
+Allow: /colleges/
+Allow: /about/
+Allow: /contact/
+
+# Googlebot specific directives
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1

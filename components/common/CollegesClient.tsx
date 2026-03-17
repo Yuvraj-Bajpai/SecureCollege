@@ -8,7 +8,7 @@ import { FilterSidebar } from '@/components/common/FilterSidebar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { 
-  Search, Grid, List, ChevronRight, Building2
+  Search, Grid, List, ChevronRight, Building2, Filter, X as CloseIcon
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -79,6 +79,8 @@ export function CollegesClient({
     facilities: [],
     special: []
   })
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const activeFiltersCount = useMemo(() => {
     let count = 0
@@ -153,7 +155,7 @@ export function CollegesClient({
 
   return (
     <div className="min-h-screen pb-16">
-      <div className="sticky top-16 z-40 border-b border-white/10 bg-black/40 backdrop-blur-xl">
+      <div className="sticky top-[64px] lg:top-[80px] z-40 border-b border-white/10 bg-black/40 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center gap-2 text-sm text-[#A1A1AA] mb-4">
             <Link href="/" className="hover:text-primary transition-colors">Home</Link>
@@ -189,54 +191,96 @@ export function CollegesClient({
                 className="pl-10 h-11 bg-white/5 border-white/15 text-white placeholder:text-[#A1A1AA] backdrop-blur-sm"
               />
             </div>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="h-11 px-4 rounded-full border border-white/15 bg-white/5 text-sm text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              {resolvedSortOptions.map((option) => (
-                <option key={option.value} className="text-slate-900" value={option.value}>
-                  Sort: {option.label}
-                </option>
-              ))}
-            </select>
-            <div className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 p-1 backdrop-blur-sm">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-full transition-colors ${
-                  viewMode === 'grid' 
-                    ? 'bg-primary text-white' 
-                    : 'text-[#A1A1AA] hover:bg-white/10'
-                }`}
+            
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-none">
+              <Button
+                variant="outline"
+                size="sm"
+                className="lg:hidden shrink-0 border-white/15 bg-white/5 text-white h-11 px-4"
+                onClick={() => setIsSidebarOpen(true)}
               >
-                <Grid className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-full transition-colors ${
-                  viewMode === 'list' 
-                    ? 'bg-primary text-white' 
-                    : 'text-[#A1A1AA] hover:bg-white/10'
-                }`}
+                <Filter className="w-4 h-4 mr-2" />
+                Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
+              </Button>
+              
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="h-11 px-4 rounded-full border border-white/15 bg-white/5 text-sm text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary shrink-0"
               >
-                <List className="w-5 h-5" />
-              </button>
+                {resolvedSortOptions.map((option) => (
+                  <option key={option.value} className="text-slate-900" value={option.value}>
+                    Sort: {option.label}
+                  </option>
+                ))}
+              </select>
+              
+              <div className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 p-1 backdrop-blur-sm shrink-0">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-full transition-colors ${
+                    viewMode === 'grid' 
+                      ? 'bg-primary text-white' 
+                      : 'text-[#A1A1AA] hover:bg-white/10'
+                  }`}
+                >
+                  <Grid className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-full transition-colors ${
+                    viewMode === 'list' 
+                      ? 'bg-primary text-white' 
+                      : 'text-[#A1A1AA] hover:bg-white/10'
+                  }`}
+                >
+                  <List className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div className="container mx-auto px-4 pt-14 pb-16">
         <div className="mt-6 lg:mt-8 flex flex-col lg:flex-row gap-8">
+          {/* Mobile Sidebar Backdrop */}
+          {isSidebarOpen && (
+            <div 
+              className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:hidden"
+              onClick={() => setIsSidebarOpen(false)}
+            />
+          )}
+
+          {/* Sidebar */}
           <aside className={cn(
-            "w-full lg:w-80 flex-shrink-0",
+            "fixed inset-y-0 left-0 z-[70] w-[85%] max-w-sm bg-[#0A0A0A] p-6 overflow-y-auto transition-transform duration-300 transform lg:static lg:translate-x-0 lg:w-80 lg:p-0 lg:bg-transparent lg:overflow-visible shrink-0",
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full",
             stickySidebar ? "lg:sticky lg:top-28 h-fit" : ""
           )}>
+            <div className="flex items-center justify-between mb-6 lg:hidden">
+              <h2 className="text-xl font-bold text-white">Filters</h2>
+              <button 
+                onClick={() => setIsSidebarOpen(false)}
+                className="p-2 hover:bg-white/10 rounded-full"
+              >
+                <CloseIcon className="w-6 h-6 text-white" />
+              </button>
+            </div>
             <FilterSidebar
               filters={filters}
               onChange={setFilters}
               activeFiltersCount={activeFiltersCount}
             />
+            <div className="mt-8 lg:hidden">
+              <Button 
+                className="w-full h-12 bg-primary text-white font-semibold"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                Show {sortedColleges.length} Colleges
+              </Button>
+            </div>
           </aside>
+
           <div className="flex-1">
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

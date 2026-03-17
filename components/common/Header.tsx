@@ -60,7 +60,7 @@ export function Header() {
               size="lg"
               className="bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
             >
-              <Link href="/students/colleges">
+              <Link href="/colleges">
                 <Search className="w-4 h-4 mr-2" />
                 Find My College
               </Link>
@@ -92,47 +92,77 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-background border-t border-border shadow-lg animate-slide-down">
-          <nav className="container mx-auto px-4 py-6 flex flex-col gap-4">
+      {/* Mobile Menu Overlay */}
+      <div 
+        className={cn(
+          "fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm lg:hidden transition-all duration-300",
+          isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
+
+      {/* Mobile Menu Drawer */}
+      <div 
+        className={cn(
+          "fixed top-0 right-0 z-[70] h-full w-[280px] bg-background border-l border-border shadow-2xl lg:hidden transition-transform duration-300 ease-in-out",
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        )}
+      >
+        <div className="flex flex-col h-full p-6">
+          <div className="flex items-center justify-between mb-8">
+            <Logo size="md" />
+            <button
+              className="p-2 hover:bg-gray-800 rounded-full"
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label="Close menu"
+            >
+              <X className="w-6 h-6 text-foreground" />
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-2 flex-1 overflow-y-auto">
             {NAVIGATION_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-base font-medium py-2 px-4 rounded-md transition-colors",
+                  "text-lg font-medium py-3 px-4 rounded-xl transition-all",
                   pathname === link.href
-                    ? "bg-primary-100 text-primary"
-                    : "text-white hover:bg-gray-800"
+                    ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_rgba(107,158,255,0.1)]"
+                    : "text-white hover:bg-white/5"
                 )}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">
+          </nav>
+
+          <div className="flex flex-col gap-3 mt-auto pt-6 border-t border-border">
+            <Button
+              asChild
+              size="lg"
+              className="bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg w-full rounded-xl"
+            >
+              <Link href="/colleges" onClick={() => setIsMobileMenuOpen(false)}>
+                <Search className="w-4 h-4 mr-2" />
+                Find My College
+              </Link>
+            </Button>
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="outline" asChild className="w-full rounded-xl border-white/10 hover:bg-white/5">
+                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>Login</Link>
+              </Button>
               <Button
                 asChild
-                size="lg"
-                className="bg-primary hover:bg-primary-600 text-white w-full"
+                className="bg-white text-black hover:bg-gray-200 w-full rounded-xl"
               >
-                <Link href="/students/colleges">Find My College</Link>
-              </Button>
-              <Button variant="outline" asChild className="w-full">
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button
-                variant="secondary"
-                asChild
-                className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 shadow-md hover:shadow-lg w-full"
-              >
-                <Link href="/signup">Sign Up</Link>
+                <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>Sign Up</Link>
               </Button>
             </div>
-          </nav>
+          </div>
         </div>
-      )}
+      </div>
     </header>
   )
 }

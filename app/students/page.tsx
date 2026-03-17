@@ -206,21 +206,21 @@ export default function StudentsPage() {
                 className="mx-auto max-w-4xl text-center"
               >
                 <h1
-                  className="text-5xl font-bold tracking-tight text-white md:text-6xl"
+                  className="text-3xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl"
                   style={{ textShadow: '0 0 18px rgba(91, 141, 239, 0.35)' }}
                 >
                   Your Admission Journey Starts Here
                 </h1>
-                <p className="mt-6 text-lg text-gray-300 md:text-xl">
+                <p className="mt-6 text-base text-gray-300 md:text-xl">
                   Verified placements, transparent insights, and personalized support for every admission milestone.
                 </p>
-                <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
                   {[
                     '100% Free for Students',
                     '37+ Partner Colleges',
                     '10,000+ Students Helped'
                   ].map((badge) => (
-                    <span key={badge} className="rounded-full bg-[#8B5CF6]/10 text-[#A78BFA] border border-[#8B5CF6]/20 px-6 py-3 text-sm font-medium">
+                    <span key={badge} className="rounded-full bg-[#8B5CF6]/10 text-[#A78BFA] border border-[#8B5CF6]/20 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium">
                       {badge}
                     </span>
                   ))}
@@ -429,7 +429,7 @@ export default function StudentsPage() {
                           size="xl"
                           className="w-full max-w-md h-14 bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white text-lg font-semibold shadow-xl hover:shadow-xl"
                         >
-                          <Link href="/students/colleges">Find My Best Options</Link>
+                          <Link href="/colleges">Find My Best Options</Link>
                         </Button>
                       </motion.div>
                     </div>
@@ -547,8 +547,8 @@ export default function StudentsPage() {
                   </p>
                 </div>
                 <Button asChild size="lg" variant="outline" className="border-white/5 bg-[#121212] text-white hover:bg-white/5">
-                  <Link href="/colleges">View all colleges</Link>
-                </Button>
+                    <Link href="/colleges">View all colleges</Link>
+                  </Button>
               </div>
               <div className="mt-10 overflow-x-auto">
                 <div className="flex gap-6 pb-2">
