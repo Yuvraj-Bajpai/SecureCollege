@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
@@ -13,7 +14,8 @@ export interface CollegeCardData {
   name: string
   city: string
   state: string
-  category: string
+  category?: string
+  naacGrade?: string
   nirfRank?: number
   logo: string
   rating: number
@@ -22,6 +24,7 @@ export interface CollegeCardData {
   averagePackage?: string
   highestPackage?: string
   description?: string
+  topCourses?: string[]
   highlight?: boolean
 }
 
@@ -30,14 +33,24 @@ interface CollegeCardProps {
   className?: string
   hrefBase?: string
   footerLabel?: string
+  compareSelected?: boolean
+  compareDisabled?: boolean
+  compareDisabledReason?: string
+  onCompareToggle?: () => void
 }
 
 export function CollegeCard({ 
   college, 
   className = '', 
   hrefBase = '/colleges',
-  footerLabel = 'View Details'
+  footerLabel = 'View Details',
+  compareSelected = false,
+  compareDisabled = false,
+  compareDisabledReason,
+  onCompareToggle
 }: CollegeCardProps) {
+  const [logoSrc, setLogoSrc] = useState(college.logo || '/images/logo-dark.png')
+
   return (
     <Card 
       className={cn(
@@ -46,15 +59,16 @@ export function CollegeCard({
         className
       )}
     >
-      <Link href={`${hrefBase}/${college.id}`}>
+      <Link href={`${hrefBase}/${college.id}`} className="block">
         <CardHeader className="pb-4">
           <div className="flex items-start gap-4">
             <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-800">
               <Image
-                src={college.logo || '/images/logo-dark.png'}
+                src={logoSrc}
                 alt={`${college.name} logo`}
                 fill
                 className="object-contain p-2 transition-transform duration-500 group-hover:scale-110"
+                onError={() => setLogoSrc('/images/logo-dark.png')}
               />
             </div>
             <div className="flex-1 min-w-0">
@@ -76,10 +90,17 @@ export function CollegeCard({
 
         <CardContent className="pt-0 pb-4">
           <div className="flex flex-wrap gap-2 mb-4">
-            <Badge variant="outline" className="text-xs">
-              <GraduationCap className="w-3 h-3 mr-1" />
-              {college.category}
-            </Badge>
+            {college.category ? (
+              <Badge variant="outline" className="text-xs">
+                <GraduationCap className="w-3 h-3 mr-1" />
+                {college.category}
+              </Badge>
+            ) : null}
+            {college.naacGrade ? (
+              <Badge variant="outline" className="text-xs">
+                NAAC {college.naacGrade}
+              </Badge>
+            ) : null}
             {college.nirfRank && (
               <Badge variant="default" className="text-xs">
                 <Award className="w-3 h-3 mr-1" />
@@ -122,19 +143,45 @@ export function CollegeCard({
               {college.description}
             </p>
           )}
+          {Array.isArray(college.topCourses) && college.topCourses.length > 0 ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {college.topCourses.map((course) => (
+                <span key={course} className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-[#D4D4D8]">
+                  {course}
+                </span>
+              ))}
+            </div>
+          ) : null}
         </CardContent>
-
-        <CardFooter className="pt-0">
-          <div className="w-full border-t border-border pt-4">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-text-secondary">{footerLabel}</span>
+      </Link>
+      <CardFooter className="pt-0">
+        <div className="w-full border-t border-border pt-4">
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <Link href={`${hrefBase}/${college.id}`} className="text-text-secondary hover:text-white transition-colors">
+              {footerLabel}
+            </Link>
+            {onCompareToggle ? (
+              <button
+                type="button"
+                onClick={onCompareToggle}
+                disabled={compareDisabled}
+                title={compareDisabled ? compareDisabledReason : undefined}
+                className={cn(
+                  'rounded-full border border-white/20 px-3 py-1 text-xs font-semibold transition',
+                  compareSelected ? 'bg-white text-black hover:bg-gray-200' : 'bg-white/5 text-white hover:bg-white/10',
+                  compareDisabled && 'cursor-not-allowed opacity-60'
+                )}
+              >
+                {compareSelected ? 'Selected' : 'Compare'}
+              </button>
+            ) : (
               <span className="text-primary font-medium group-hover:translate-x-1 transition-transform inline-block">
                 →
               </span>
-            </div>
+            )}
           </div>
-        </CardFooter>
-      </Link>
+        </div>
+      </CardFooter>
     </Card>
   )
 }

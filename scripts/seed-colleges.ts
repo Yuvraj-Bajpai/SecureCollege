@@ -82,7 +82,6 @@ async function main() {
         .insert(batch)
         .select()
 
-
       if (error) {
         console.error(`Batch ${i / batchSize + 1} failed:`, error)
         errorCount += batch.length
@@ -94,7 +93,6 @@ async function main() {
 
       await new Promise(resolve => setTimeout(resolve, 500))
     }
-
 
     console.log(`\n✅ Seeding complete!`)
     console.log(`Successfully inserted: ${successCount} colleges`)
@@ -108,6 +106,4 @@ async function main() {
     process.exit(1)
   }
 }
-
-
 main()

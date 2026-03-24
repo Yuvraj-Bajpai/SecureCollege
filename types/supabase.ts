@@ -147,20 +147,30 @@ export type Database = {
           affiliation: string | null
           approvals: string[] | null
           averagepackage: string | null
+          banner_url: string | null
           campusarea: string | null
           city: string
+          contact_last_checked_at: string | null
+          contact_verified: boolean | null
           country: string | null
           courses: string[] | null
           created_at: string | null
           description: string | null
+          email: string | null
           estd: number | null
+          hero_image_url: string | null
           highestpackage: string | null
           id: string
+          instagram_url: string | null
           intake_total: number | null
+          linkedin_url: string | null
           logo_url: string | null
+          media_verified_at: string | null
           name: string
           notablerecruiters: string[] | null
+          facebook_url: string | null
           placementpercent: string | null
+          phone: string | null
           rating: number | null
           rating_count: number | null
           slug: string
@@ -168,25 +178,37 @@ export type Database = {
           type: string | null
           updated_at: string | null
           website: string | null
+          youtube_url: string | null
+          youtube_video_id: string | null
         }
         Insert: {
           affiliation?: string | null
           approvals?: string[] | null
           averagepackage?: string | null
+          banner_url?: string | null
           campusarea?: string | null
           city: string
+          contact_last_checked_at?: string | null
+          contact_verified?: boolean | null
           country?: string | null
           courses?: string[] | null
           created_at?: string | null
           description?: string | null
+          email?: string | null
           estd?: number | null
+          facebook_url?: string | null
+          hero_image_url?: string | null
           highestpackage?: string | null
           id?: string
+          instagram_url?: string | null
           intake_total?: number | null
+          linkedin_url?: string | null
           logo_url?: string | null
+          media_verified_at?: string | null
           name: string
           notablerecruiters?: string[] | null
           placementpercent?: string | null
+          phone?: string | null
           rating?: number | null
           rating_count?: number | null
           slug: string
@@ -194,25 +216,37 @@ export type Database = {
           type?: string | null
           updated_at?: string | null
           website?: string | null
+          youtube_url?: string | null
+          youtube_video_id?: string | null
         }
         Update: {
           affiliation?: string | null
           approvals?: string[] | null
           averagepackage?: string | null
+          banner_url?: string | null
           campusarea?: string | null
           city?: string
+          contact_last_checked_at?: string | null
+          contact_verified?: boolean | null
           country?: string | null
           courses?: string[] | null
           created_at?: string | null
           description?: string | null
+          email?: string | null
           estd?: number | null
+          facebook_url?: string | null
+          hero_image_url?: string | null
           highestpackage?: string | null
           id?: string
+          instagram_url?: string | null
           intake_total?: number | null
+          linkedin_url?: string | null
           logo_url?: string | null
+          media_verified_at?: string | null
           name?: string
           notablerecruiters?: string[] | null
           placementpercent?: string | null
+          phone?: string | null
           rating?: number | null
           rating_count?: number | null
           slug?: string
@@ -220,6 +254,8 @@ export type Database = {
           type?: string | null
           updated_at?: string | null
           website?: string | null
+          youtube_url?: string | null
+          youtube_video_id?: string | null
         }
         Relationships: []
       }

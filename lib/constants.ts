@@ -116,11 +116,9 @@ export const BENEFITS = [
 ]
 
 export const SOCIAL_LINKS = {
-  facebook: "https://facebook.com/securecollege",
-  twitter: "https://twitter.com/securecollege",
-  instagram: "https://instagram.com/securecollege",
-  linkedin: "https://linkedin.com/company/securecollege",
-  youtube: "https://youtube.com/@securecollege",
+  linkedin: "https://www.linkedin.com/in/secure-college-a4858138a?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+  instagram: "https://www.instagram.com/securecollegee/?hl=en",
+  mailto: "mailto:securecollege6@gmail.com",
 }
 
 export const FOOTER_LINKS = {

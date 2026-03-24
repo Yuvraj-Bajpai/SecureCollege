@@ -6,12 +6,10 @@ import { useState, type FormEvent } from 'react'
 import { Logo } from '@/components/common/Logo'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { SITE_CONFIG } from '@/lib/constants'
+import { SITE_CONFIG, SOCIAL_LINKS } from '@/lib/constants'
 import { 
   Linkedin, 
   Instagram, 
-  Twitter, 
-  Youtube, 
   Mail, 
   Phone,
   Check
@@ -129,15 +127,16 @@ export function Footer() {
             {/* Social Media */}
             <div className="flex gap-3">
               {[
-                { Icon: Linkedin, href: '#', label: 'LinkedIn' },
-                { Icon: Instagram, href: '#', label: 'Instagram' },
-                { Icon: Twitter, href: '#', label: 'Twitter' },
-                { Icon: Youtube, href: '#', label: 'YouTube' },
+                { Icon: Linkedin, href: SOCIAL_LINKS.linkedin, label: 'LinkedIn' },
+                { Icon: Instagram, href: SOCIAL_LINKS.instagram, label: 'Instagram' },
+                { Icon: Mail, href: SOCIAL_LINKS.mailto, label: 'Email' },
               ].map(({ Icon, href, label }) => (
                 <a
                   key={label}
                   href={href}
                   aria-label={label}
+                  target={href.startsWith('http') ? '_blank' : undefined}
+                  rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   className="w-10 h-10 rounded-full border border-white/15 bg-white/5 backdrop-blur-xl flex items-center justify-center text-white/80 shadow-sm transition-all hover:text-white hover:border-primary/60 hover:bg-primary/30 hover:shadow-primary/40 hover:-translate-y-0.5 hover:scale-110"
                 >
                   <Icon className="w-5 h-5" />
@@ -248,10 +247,18 @@ export function Footer() {
             </div>
 
             {/* Contact */}
-            <div className="flex items-center gap-4 text-sm text-gray-400">
-              <a href={`mailto:${SITE_CONFIG.contactEmail}`} className="hover:text-white flex items-center gap-1">
+            <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-400">
+              <a href={SOCIAL_LINKS.mailto} className="hover:text-white flex items-center gap-1">
                 <Mail className="w-4 h-4" />
                 <span className="hidden sm:inline">{SITE_CONFIG.contactEmail}</span>
+              </a>
+              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-white flex items-center gap-1">
+                <Linkedin className="w-4 h-4" />
+                <span className="hidden sm:inline">LinkedIn</span>
+              </a>
+              <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-white flex items-center gap-1">
+                <Instagram className="w-4 h-4" />
+                <span className="hidden sm:inline">Instagram</span>
               </a>
               <a href={`tel:${SITE_CONFIG.phone}`} className="hover:text-white flex items-center gap-1">
                 <Phone className="w-4 h-4" />

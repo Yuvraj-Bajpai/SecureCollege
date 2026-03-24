@@ -6,82 +6,53 @@ import type { CollegeCardData } from '@/components/common/CollegeCard'
 export const revalidate = 60
 
 type CollegeRow = {
-  name: string | null
-  slug: string | null
-  city: string | null
-  state: string | null
-  rating: number | string | null
-  highestpackage: string | null
-  averagepackage: string | null
-  placementpercent: string | null
-  description: string | null
-  feerange: string | null
-  feeRange?: string | null
-}
-
-type SeedCollege = {
+  id: string
   name: string
-  slug?: string
+  slug: string
   city: string
   state: string
-  rating: number | string
-  placementPercent?: string
-  averagePackage?: string
-  highestPackage?: string
-  feeRange?: string
-  description?: string
+  rating: number | string | null
+  logo_url: string | null
+  type: string | null
+  naac_grade: string | null
+  nirf_rank: number | null
+  description: string | null
+  courses: string[] | null
+}
+
+const normalizeUrl = (value: string | null | undefined) => {
+  if (!value) return null
+  const trimmed = value.trim()
+  if (!trimmed) return null
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  return `https://${trimmed}`
 }
 
 export default async function StudentCollegesPage() {
   const supabase = createSupabaseServerClient()
   const { data, error } = await supabase
     .from('colleges')
-    .select('*')
+    .select('id,name,slug,city,state,rating,logo_url,type,naac_grade,nirf_rank,description,courses')
     .order('rating', { ascending: false })
-  
-  console.log('Students colleges page - Supabase query result:')
-  console.log('Data length:', data?.length)
-  console.log('Error:', error)
 
-  let mapped: CollegeCardData[] = []
-
-  if (!error && data && data.length > 0) {
-    mapped = (data as CollegeRow[]).map((c) => ({
-      id: c.slug || c.name || 'unknown',
-      name: c.name || 'Unknown College',
-      city: c.city || 'Unknown City',
-      state: c.state || 'Unknown State',
-      category: 'Engineering',
-      logo: '/images/logo.png',
-      rating: Number(c.rating) || 0,
-      placementPercent: c.placementpercent || undefined,
-      averagePackage: c.averagepackage || undefined,
-      highestPackage: c.highestpackage || undefined,
-      feeRange: c.feerange || c.feeRange || undefined,
-      description: c.description || undefined,
-      highlight: false,
-    }))
-  }
-
-  if (mapped.length === 0) {
-    const seedModule = await import('@/lib/data/colleges-seed.json')
-    const seed = seedModule.default as { colleges: SeedCollege[] }
-    mapped = seed.colleges.map((c) => ({
-      id: c.slug || c.name,
-      name: c.name,
-      city: c.city,
-      state: c.state,
-      category: 'Engineering',
-      logo: '/images/logo.png',
-      rating: Number(c.rating) || 0,
-      placementPercent: c.placementPercent || undefined,
-      averagePackage: c.averagePackage || undefined,
-      highestPackage: c.highestPackage || undefined,
-      feeRange: c.feeRange || undefined,
-      description: c.description || undefined,
-      highlight: false,
-    }))
-  }
+  const mapped: CollegeCardData[] = !error && data
+    ? (data as CollegeRow[]).map((c) => {
+        return {
+          id: c.slug.trim(),
+          name: c.name,
+          city: c.city,
+          state: c.state,
+          category: c.type || undefined,
+          naacGrade: c.naac_grade || undefined,
+          logo: normalizeUrl(c.logo_url) || '/images/logo-dark.png',
+          rating: Number(c.rating) || 0,
+          nirfRank: typeof c.nirf_rank === 'number' ? c.nirf_rank : undefined,
+          description: c.description || undefined,
+          topCourses: Array.isArray(c.courses) ? c.courses.filter(Boolean).slice(0, 3) : undefined,
+          highlight: false,
+        }
+      })
+    : []
 
   return (
     <div className="relative min-h-screen bg-[#0A0A0A] bg-gradient-to-b from-[#0F0F0F] to-[#0A0A0A] text-white overflow-hidden">

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Menu, X, Search } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/common/Logo'
 import { NAVIGATION_LINKS } from '@/lib/constants'
@@ -58,12 +58,9 @@ export function Header() {
             <Button
               asChild
               size="lg"
-              className="bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="bg-white text-black hover:bg-gray-200 font-semibold shadow-lg hover:shadow-xl transition-all"
             >
-              <Link href="/colleges">
-                <Search className="w-4 h-4 mr-2" />
-                Find My College
-              </Link>
+              <Link href="/compare">Compare Colleges</Link>
             </Button>
             <Button variant="ghost" asChild className="text-foreground hover:text-primary">
               <Link href="/login">Login</Link>
@@ -142,11 +139,10 @@ export function Header() {
             <Button
               asChild
               size="lg"
-              className="bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg w-full rounded-xl"
+              className="bg-white text-black hover:bg-gray-200 font-semibold shadow-lg w-full rounded-xl"
             >
-              <Link href="/colleges" onClick={() => setIsMobileMenuOpen(false)}>
-                <Search className="w-4 h-4 mr-2" />
-                Find My College
+              <Link href="/compare" onClick={() => setIsMobileMenuOpen(false)}>
+                Compare Colleges
               </Link>
             </Button>
             <div className="grid grid-cols-2 gap-3">

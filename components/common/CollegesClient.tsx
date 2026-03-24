@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { CollegeCard, type CollegeCardData } from '@/components/common/CollegeCard'
 import { FilterSidebar } from '@/components/common/FilterSidebar'
@@ -58,6 +59,8 @@ export function CollegesClient({
   footerLabel = 'View Details',
   stickySidebar = false
 }: Props) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const resolvedSortOptions = sortOptions && sortOptions.length > 0 ? sortOptions : defaultSortOptions
   const initialSort = defaultSort || resolvedSortOptions[0]?.value || 'relevance'
   const [searchQuery, setSearchQuery] = useState('')
@@ -66,6 +69,7 @@ export function CollegesClient({
   const [currentPage, setCurrentPage] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [colleges, setColleges] = useState<CollegeCardData[]>(initialColleges || [])
+  const [compareSelection, setCompareSelection] = useState<string[]>([])
 
   const [filters, setFilters] = useState<FilterState>({
     location: [],
@@ -81,6 +85,44 @@ export function CollegesClient({
   })
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    const param = searchParams?.get('compare') || ''
+    const values = param.split(',').map((item) => item.trim()).filter(Boolean)
+    setCompareSelection(values.slice(0, 3))
+  }, [searchParams])
+
+  const updateCompareParam = (nextSelection: string[]) => {
+    const params = new URLSearchParams(searchParams?.toString())
+    if (nextSelection.length > 0) {
+      params.set('compare', nextSelection.join(','))
+    } else {
+      params.delete('compare')
+    }
+    const query = params.toString()
+    router.replace(query ? `?${query}` : '?', { scroll: false })
+  }
+
+  const handleCompareToggle = (slug: string) => {
+    setCompareSelection((prev) => {
+      if (prev.includes(slug)) {
+        const next = prev.filter((item) => item !== slug)
+        updateCompareParam(next)
+        return next
+      }
+      if (prev.length >= 3) {
+        return prev
+      }
+      const next = [...prev, slug]
+      updateCompareParam(next)
+      return next
+    })
+  }
+
+  const clearCompare = () => {
+    updateCompareParam([])
+    setCompareSelection([])
+  }
 
   const activeFiltersCount = useMemo(() => {
     let count = 0
@@ -107,7 +149,7 @@ export function CollegesClient({
         )
         if (!matches) return false
       }
-      if (filters.branch.length > 0 && !filters.branch.includes(college.category)) {
+      if (filters.branch.length > 0 && (!college.category || !filters.branch.includes(college.category))) {
         return false
       }
       if (filters.rating.min > 0 && college.rating < filters.rating.min) {
@@ -298,20 +340,27 @@ export function CollegesClient({
                       : "grid-cols-1"
                   )}
                 >
-                  {paginatedColleges.map((college, idx) => (
-                    <motion.div
-                      key={college.id}
-                      initial={{ opacity: 0, y: 50 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: idx * 0.05 }}
-                    >
-                      <CollegeCard 
-                        college={college} 
-                        hrefBase={profileBasePath}
-                        footerLabel={footerLabel}
-                      />
-                    </motion.div>
-                  ))}
+                  {paginatedColleges.map((college, idx) => {
+                    const compareDisabled = compareSelection.length >= 3 && !compareSelection.includes(college.id)
+                    return (
+                      <motion.div
+                        key={college.id}
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: idx * 0.05 }}
+                      >
+                        <CollegeCard 
+                          college={college} 
+                          hrefBase={profileBasePath}
+                          footerLabel={footerLabel}
+                          compareSelected={compareSelection.includes(college.id)}
+                          compareDisabled={compareDisabled}
+                          compareDisabledReason={compareDisabled ? 'Max 3 colleges can be compared' : undefined}
+                          onCompareToggle={() => handleCompareToggle(college.id)}
+                        />
+                      </motion.div>
+                    )
+                  })}
                 </div>
                 {totalPages > 1 && (
                   <div className="flex justify-center items-center gap-2 mt-12">
@@ -387,6 +436,33 @@ export function CollegesClient({
           </div>
         </div>
       </div>
+      {compareSelection.length > 0 ? (
+        <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-black/80 backdrop-blur-xl">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm text-white">
+                {compareSelection.length} colleges selected — Compare Now →
+              </span>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  asChild
+                  size="sm"
+                  className="bg-white text-black hover:bg-gray-200"
+                >
+                  <Link href={`/compare?compare=${compareSelection.join(',')}`}>Compare Now</Link>
+                </Button>
+                <button
+                  type="button"
+                  onClick={clearCompare}
+                  className="text-sm text-white/70 hover:text-white"
+                >
+                  ✕ Clear All
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

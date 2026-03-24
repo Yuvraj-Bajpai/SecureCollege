@@ -2,433 +2,532 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
-import { 
-  MapPin, Star, TrendingUp, Building2, Award, Users, 
-  BookOpen, Calendar, Globe, Phone, Mail, ExternalLink,
-  GraduationCap, Briefcase, DollarSign, Clock, CheckCircle
+import { Button } from '@/components/ui/button'
+import {
+  MapPin,
+  Star,
+  Globe,
+  Mail,
+  Phone,
+  ExternalLink,
+  BadgeCheck,
+  GraduationCap,
+  BookOpen,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Info,
 } from 'lucide-react'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { ParticleBackground } from '@/components/common/ParticleBackground'
+import { CollegeLogoImage } from '@/components/common/CollegeLogoImage'
+import { extractYouTubeVideoId, formatPhoneDisplay, isValidSocialUrl } from '@/lib/collegeProfileUtils'
 
+export const dynamic = 'force-dynamic'
 export const revalidate = 120
 
-export async function generateStaticParams() {
-  try {
-    const supabase = createSupabaseServerClient()
-    const { data, error } = await supabase.from('colleges').select('slug')
-    if (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Supabase error in generateStaticParams:', error.message)
-      }
-      return []
+type CourseRow = {
+  id: string
+  course: string
+  specialization: string | null
+  level: string
+  duration_years: number | null
+  fees_min: number | null
+  fees_max: number | null
+  fees_type: string | null
+  highestpackage: string | null
+  averagepackage: string | null
+  placementpercent: string | null
+  entrance: string[] | null
+  eligibility: string | null
+  cutoff_type: string | null
+  cutoff_min: string | null
+  cutoff_comment: string | null
+  notablerecruiters: string[] | null
+}
+
+const inrFormat = new Intl.NumberFormat('en-IN')
+
+const normalizeUrl = (value: string | null | undefined) => {
+  if (!value) return null
+  const trimmed = value.trim()
+  if (!trimmed) return null
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  return `https://${trimmed}`
+}
+
+const readVirtualTourUrl = (college: Record<string, unknown>) => {
+  const candidates = ['virtual_tour_url', 'virtual_tour', 'virtualtour_url', 'virtual_tour_link']
+  for (const key of candidates) {
+    const value = college[key]
+    if (typeof value === 'string' && value.trim()) {
+      return normalizeUrl(value)
     }
-    return (data || []).map((c: { slug: string }) => ({ slug: c.slug }))
-  } catch {
-    return []
   }
+  return null
 }
 
 export default async function StudentCollegeProfilePage({ params }: { params: { slug: string } }) {
   try {
     const supabase = createSupabaseServerClient()
-    const { data, error } = await supabase
-      .from('colleges')
-      .select('*')
-      .eq('slug', params.slug)
-      .single()
+    const slug = params.slug.trim()
 
-    if (error || !data) {
-      console.warn('College not found:', params.slug, error?.message)
-      notFound()
+    const exact = await supabase.from('colleges').select('*').eq('slug', slug).limit(1).maybeSingle()
+    let college = exact.data as any
+    let error = exact.error
+
+    if (!college) {
+      const prefix = await supabase.from('colleges').select('*').ilike('slug', `${slug}%`).limit(5)
+      const rows = (prefix.data || []) as Array<Record<string, unknown>>
+      college = rows.find((r) => (typeof r.slug === 'string' ? r.slug.trim() : '') === slug) || rows[0] || null
+      error = prefix.error
     }
 
-    const rating = Number(data.rating) || 0
-    const ratingCount = Number(data.rating_count) || 0
+    if (error || !college) notFound()
+
+    const { data: courseData } = await supabase
+      .from('college_courses')
+      .select('*')
+      .eq('college_id', college.id)
+      .order('level', { ascending: true })
+      .order('course', { ascending: true })
+
+    const courses = (courseData || []) as CourseRow[]
+    const rating = Number(college.rating) || 0
+    const ratingCount = Number(college.rating_count) || 0
+
+    const rawLogo = normalizeUrl(college.logo_url)
+    const logo = rawLogo || '/images/logo-dark.png'
+    const websiteHref = normalizeUrl(college.website)
+    const brochureHref = normalizeUrl(college.brochure_url)
+    const virtualTourHref = readVirtualTourUrl(college)
+    const emailValue = college.email?.trim() || null
+    const phoneValue = college.phone?.trim() || null
+
+    const heroVideoUrl = college.youtube_url?.trim() || null
+    const heroVideoId = college.youtube_video_id || (heroVideoUrl ? extractYouTubeVideoId(heroVideoUrl) : null)
+    const heroEmbedSrc = heroVideoId
+      ? `https://www.youtube.com/embed/${heroVideoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&playsinline=1&loop=1&playlist=${heroVideoId}`
+      : null
+    const heroImage = normalizeUrl(college.hero_image_url) || normalizeUrl(college.banner_url)
+    const description = typeof college.description === 'string' ? college.description.trim() : ''
+
+    const socialLinks = [
+      { label: 'Facebook', href: normalizeUrl(college.facebook_url), Icon: Facebook },
+      { label: 'Instagram', href: normalizeUrl(college.instagram_url), Icon: Instagram },
+      { label: 'LinkedIn', href: normalizeUrl(college.linkedin_url), Icon: Linkedin },
+    ].filter((s) => s.href && isValidSocialUrl(s.href))
+
+    const infoTiles = [
+      { label: 'Established', value: college.estd },
+      { label: 'Type', value: college.type },
+      { label: 'Ownership', value: college.ownership },
+      { label: 'Affiliation', value: college.affiliation },
+      { label: 'Country', value: college.country },
+      { label: 'Campus Size', value: college.campus_size },
+      { label: 'NAAC Grade', value: college.naac_grade },
+      { label: 'NIRF Rank', value: college.nirf_rank ? `#${college.nirf_rank}` : null },
+    ].filter((t) => t.value !== null && t.value !== undefined && String(t.value).trim() !== '')
+    const approvals = Array.isArray(college.approvals) ? college.approvals.filter(Boolean) : []
+    const locationText = [college.city, college.state].filter(Boolean).join(', ')
 
     return (
-      <div className="relative min-h-screen bg-[#0A0A0A] bg-gradient-to-b from-[#0F0F0F] to-[#0A0A0A] text-white pb-16 overflow-hidden">
+      <div className="relative min-h-screen bg-[#0A0A0A] bg-gradient-to-b from-[#0F0F0F] to-[#0A0A0A] text-white overflow-hidden">
         <ParticleBackground />
         <div className="fixed inset-0 pointer-events-none z-0">
           <div className="absolute top-0 inset-x-0 h-[40rem] bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(91,141,239,0.1),transparent)] blur-3xl" />
-          <div className="absolute top-0 right-1/4 h-96 w-96 rounded-full bg-[#5B8DEF]/10 blur-3xl" />
-          <div className="absolute top-[-10%] left-[-10%] h-[40%] w-[40%] rounded-full bg-[#5B8DEF]/10 blur-[120px] animate-pulse" />
-          <div className="absolute bottom-[-10%] right-[-10%] h-[40%] w-[40%] rounded-full bg-indigo-500/10 blur-[120px]" />
-          <div className="absolute top-[20%] right-[5%] h-[30%] w-[30%] rounded-full bg-cyan-500/10 blur-[100px] animate-pulse" />
         </div>
-        
         <div className="relative z-10">
-          {/* Header Section */}
-          <div className="container mx-auto px-4 pt-28">
-            <div className="flex items-center gap-4 mb-6">
-              <Link href="/colleges" className="text-[#A1A1AA] hover:text-white transition-colors">
-                ← Back to Colleges
-              </Link>
-              <span className="text-[#A1A1AA]">•</span>
-              <span className="text-sm text-[#A1A1AA]">College Profile</span>
-            </div>
+        <section className="relative w-full overflow-hidden">
+          <div className="relative h-[100svh] min-h-[640px] w-full">
+            {heroVideoUrl && heroEmbedSrc ? (
+              <div className="absolute inset-0">
+                <iframe
+                  src={heroEmbedSrc}
+                  className="absolute inset-0 h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={`${college.name} campus video`}
+                />
+              </div>
+            ) : heroImage ? (
+              <Image src={heroImage} alt={`${college.name} hero`} fill priority className="object-cover" />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-[#111827] via-[#1E293B] to-[#0A0A0A]" />
+            )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Content */}
-              <div className="lg:col-span-2 space-y-8">
-                {/* College Header Card */}
-                <Card className="border border-white/10 bg-white/5 backdrop-blur-xl transition-shadow hover:shadow-primary-glow">
-                  <CardContent className="p-8">
-                    <div className="flex items-start gap-6">
-                      <div className="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-800 border border-white/10">
-                        <Image
-                          src={data.logo_url || "/images/logo-dark.png"}
-                          alt={`${data.name} logo`}
-                          fill
-                          className="object-contain p-3"
-                        />
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <h1 className="text-3xl lg:text-4xl font-bold text-white mb-3">
-                          {data.name}
-                        </h1>
-                        
-                        <div className="flex items-center gap-3 text-sm text-[#A1A1AA] mb-4">
-                          <MapPin className="w-4 h-4" />
-                          <span>{data.city}, {data.state}</span>
-                          <span>•</span>
-                          <span>Established {data.estd}</span>
-                        </div>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-[#0A0A0A]" />
 
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="flex items-center gap-2 bg-white/5 rounded-full px-4 py-2">
-                            <Star className="w-5 h-5 text-yellow-500" />
-                            <span className="font-semibold">{rating}/5</span>
-                            {ratingCount > 0 && (
-                              <span className="text-[#A1A1AA] text-sm">({ratingCount} reviews)</span>
-                            )}
-                          </div>
-                          <span className="text-sm text-green-400 bg-green-400/10 px-3 py-1 rounded-full">
-                            Verified Data
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-4 text-sm">
-                          {data.website && (
-                            <a 
-                              href={data.website} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
-                            >
-                              <Globe className="w-4 h-4" />
-                              Visit Website
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Key Metrics Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-                    <CardContent className="p-6 text-center">
-                      <TrendingUp className="w-8 h-8 text-green-400 mx-auto mb-3" />
-                      <div className="text-2xl font-bold text-white mb-1">
-                        {data.highestpackage || '—'}
-                      </div>
-                      <div className="text-sm text-[#A1A1AA]">Highest Package</div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-                    <CardContent className="p-6 text-center">
-                      <DollarSign className="w-8 h-8 text-blue-400 mx-auto mb-3" />
-                      <div className="text-2xl font-bold text-white mb-1">
-                        {data.averagepackage || '—'}
-                      </div>
-                      <div className="text-sm text-[#A1A1AA]">Average Package</div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-                    <CardContent className="p-6 text-center">
-                      <CheckCircle className="w-8 h-8 text-purple-400 mx-auto mb-3" />
-                      <div className="text-2xl font-bold text-white mb-1">
-                        {data.placementpercent || '—'}
-                      </div>
-                      <div className="text-sm text-[#A1A1AA]">Placement Rate</div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-                    <CardContent className="p-6 text-center">
-                      <Users className="w-8 h-8 text-orange-400 mx-auto mb-3" />
-                      <div className="text-2xl font-bold text-white mb-1">
-                        {data.intake_total ? `${data.intake_total}+` : '—'}
-                      </div>
-                      <div className="text-sm text-[#A1A1AA]">Annual Intake</div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* About Section */}
-                <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-                  <CardContent className="p-8">
-                    <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-3">
-                      <BookOpen className="w-6 h-6 text-primary" />
-                      About the College
-                    </h2>
-                    <p className="text-[#A1A1AA] leading-relaxed text-lg">
-                      {data.description || 'No detailed description available. This college provides quality education with modern infrastructure and experienced faculty.'}
-                    </p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                      <div className="space-y-2">
-                        <h3 className="font-semibold text-white flex items-center gap-2">
-                          <Building2 className="w-4 h-4 text-primary" />
-                          Affiliation
-                        </h3>
-                        <p className="text-[#A1A1AA]">{data.affiliation || 'Not specified'}</p>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <h3 className="font-semibold text-white flex items-center gap-2">
-                          <Award className="w-4 h-4 text-primary" />
-                          Approvals
-                        </h3>
-                        <p className="text-[#A1A1AA]">
-                          {Array.isArray(data.approvals) && data.approvals.length > 0 
-                            ? data.approvals.join(', ') 
-                            : 'UGC, AICTE'}
-                        </p>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <h3 className="font-semibold text-white flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-primary" />
-                          Established
-                        </h3>
-                        <p className="text-[#A1A1AA]">{data.estd || 'Not specified'}</p>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <h3 className="font-semibold text-white flex items-center gap-2">
-                          <GraduationCap className="w-4 h-4 text-primary" />
-                          Type
-                        </h3>
-                        <p className="text-[#A1A1AA]">{data.type || 'Engineering College'}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Courses & Programs */}
-                <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-                  <CardContent className="p-8">
-                    <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-3">
-                      <GraduationCap className="w-6 h-6 text-primary" />
-                      Programs Offered
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {Array.isArray(data.courses) && data.courses.length > 0 ? (
-                        data.courses.slice(0, 8).map((course: string, index: number) => (
-                          <div key={index} className="flex items-center gap-3 p-4 rounded-lg border border-white/10 bg-white/5">
-                            <div className="w-3 h-3 bg-primary rounded-full"></div>
-                            <span className="text-white">{course}</span>
-                          </div>
-                        ))
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-3 p-4 rounded-lg border border-white/10 bg-white/5">
-                            <div className="w-3 h-3 bg-primary rounded-full"></div>
-                            <span className="text-white">B.Tech Computer Science</span>
-                          </div>
-                          <div className="flex items-center gap-3 p-4 rounded-lg border border-white/10 bg-white/5">
-                            <div className="w-3 h-3 bg-primary rounded-full"></div>
-                            <span className="text-white">B.Tech Mechanical Engineering</span>
-                          </div>
-                          <div className="flex items-center gap-3 p-4 rounded-lg border border-white/10 bg-white/5">
-                            <div className="w-3 h-3 bg-primary rounded-full"></div>
-                            <span className="text-white">B.Tech Electrical Engineering</span>
-                          </div>
-                          <div className="flex items-center gap-3 p-4 rounded-lg border border-white/10 bg-white/5">
-                            <div className="w-3 h-3 bg-primary rounded-full"></div>
-                            <span className="text-white">MBA</span>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    
-                    {(Array.isArray(data.courses) && data.courses.length > 8) && (
-                      <div className="mt-4 text-center">
-                        <span className="text-sm text-[#A1A1AA]">
-                          +{data.courses.length - 8} more programs
-                        </span>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                {/* Placement Highlights */}
-                <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-                  <CardContent className="p-8">
-                    <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-3">
-                      <Briefcase className="w-6 h-6 text-primary" />
-                      Placement Highlights
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <h3 className="font-semibold text-white">Top Recruiters</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {Array.isArray(data.notablerecruiters) && data.notablerecruiters.length > 0 ? (
-                            data.notablerecruiters.slice(0, 6).map((recruiter: string, index: number) => (
-                              <span key={index} className="px-3 py-1 bg-white/5 rounded-full text-sm text-white border border-white/10">
-                                {recruiter}
-                              </span>
-                            ))
-                          ) : (
-                            <>
-                              <span className="px-3 py-1 bg-white/5 rounded-full text-sm text-white border border-white/10">Amazon</span>
-                              <span className="px-3 py-1 bg-white/5 rounded-full text-sm text-white border border-white/10">Microsoft</span>
-                              <span className="px-3 py-1 bg-white/5 rounded-full text-sm text-white border border-white/10">TCS</span>
-                              <span className="px-3 py-1 bg-white/5 rounded-full text-sm text-white border border-white/10">Infosys</span>
-                              <span className="px-3 py-1 bg-white/5 rounded-full text-sm text-white border border-white/10">Wipro</span>
-                              <span className="px-3 py-1 bg-white/5 rounded-full text-sm text-white border border-white/10">Accenture</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <h3 className="font-semibold text-white">Placement Statistics</h3>
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-[#A1A1AA]">Highest Package</span>
-                            <span className="text-white font-semibold">{data.highestpackage || '—'}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-[#A1A1AA]">Average Package</span>
-                            <span className="text-white font-semibold">{data.averagepackage || '—'}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-[#A1A1AA]">Placement Rate</span>
-                            <span className="text-white font-semibold">{data.placementpercent || '—'}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+            <div className="absolute inset-0">
+              <div className="container mx-auto px-4 pt-24">
+                <Link
+                  href="/colleges"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/20 px-4 py-2 text-sm font-medium text-white backdrop-blur hover:bg-black/30"
+                >
+                  ← Back to Colleges
+                </Link>
               </div>
 
-              {/* Sidebar */}
-              <div className="space-y-6">
-                {/* Quick Facts */}
-                <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold text-white mb-4">College At a Glance</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <MapPin className="w-4 h-4 text-primary" />
-                        <span className="text-sm text-[#A1A1AA]">{data.city}, {data.state}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Calendar className="w-4 h-4 text-primary" />
-                        <span className="text-sm text-[#A1A1AA]">Est. {data.estd}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Building2 className="w-4 h-4 text-primary" />
-                        <span className="text-sm text-[#A1A1AA]">{data.type || 'Engineering College'}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Award className="w-4 h-4 text-primary" />
-                        <span className="text-sm text-[#A1A1AA]">
-                          {Array.isArray(data.approvals) && data.approvals.length > 0 
-                            ? data.approvals.join(', ') 
-                            : 'UGC Approved'}
-                        </span>
-                      </div>
-                      {data.campusarea && (
-                        <div className="flex items-center gap-3">
-                          <Globe className="w-4 h-4 text-primary" />
-                          <span className="text-sm text-[#A1A1AA]">{data.campusarea} Campus</span>
-                        </div>
-                      )}
+              <div className="container mx-auto px-4">
+                <div className="mt-10 max-w-4xl">
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-16 w-16 rounded-2xl border border-white/20 bg-black/20 backdrop-blur overflow-hidden">
+                      <CollegeLogoImage src={logo} alt={`${college.name} logo`} fill className="object-contain p-3" />
                     </div>
-                  </CardContent>
-                </Card>
+                    <div className="min-w-0">
+                      <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-white">{college.name}</h1>
+                      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/90">
+                        {locationText ? (
+                          <span className="inline-flex items-center gap-2">
+                            <MapPin className="h-4 w-4" />
+                            {locationText}
+                          </span>
+                        ) : null}
+                        {college.type ? <span className="text-white/85">{college.type}</span> : null}
+                        {rating > 0 ? (
+                          <span className="inline-flex items-center gap-2">
+                            <Star className="h-4 w-4 text-yellow-300" />
+                            {rating}/5{ratingCount > 0 ? <span className="text-white/75">({ratingCount})</span> : null}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
 
-                {/* Contact Information */}
-                <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold text-white mb-4">Get In Touch</h3>
-                    <div className="space-y-3">
-                      {data.website && (
-                        <a 
-                          href={data.website} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-3 text-sm text-[#A1A1AA] hover:text-white transition-colors"
-                        >
-                          <Globe className="w-4 h-4" />
+                  <div className="mt-6 flex flex-wrap items-center gap-2">
+                    {college.naac_grade ? (
+                      <span className="inline-flex items-center rounded-full border border-white/20 bg-black/20 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+                        NAAC {college.naac_grade}
+                      </span>
+                    ) : null}
+                    {college.nirf_rank ? (
+                      <span className="inline-flex items-center rounded-full border border-white/20 bg-black/20 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+                        NIRF #{college.nirf_rank}
+                      </span>
+                    ) : null}
+                    {college.contact_verified ? (
+                      <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200/30 bg-emerald-500/15 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+                        <BadgeCheck className="h-4 w-4" />
+                        Verified contacts
+                      </span>
+                    ) : null}
+                    {approvals.length > 0 ? (
+                      <span className="inline-flex items-center rounded-full border border-white/20 bg-black/20 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+                        {approvals.slice(0, 3).join(' • ')}
+                        {approvals.length > 3 ? ` +${approvals.length - 3}` : ''}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                    {websiteHref ? (
+                      <Button
+                        asChild
+                        size="lg"
+                        className="h-12 px-6 bg-white text-black hover:bg-gray-200 border border-white/20"
+                      >
+                        <a href={websiteHref} target="_blank" rel="noopener noreferrer">
+                          <Globe className="w-4 h-4 mr-2" />
                           Official Website
+                          <ExternalLink className="w-4 h-4 ml-2" />
                         </a>
-                      )}
-                      <div className="flex items-center gap-3 text-sm text-[#A1A1AA]">
-                        <Mail className="w-4 h-4" />
-                        <span>info@abes.ac.in</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm text-[#A1A1AA]">
-                        <Phone className="w-4 h-4" />
-                        <span>+91-XXXXXXXXXX</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                      </Button>
+                    ) : null}
+                    {brochureHref ? (
+                      <Button
+                        asChild
+                        size="lg"
+                        className="h-12 px-6 bg-black/20 text-white hover:bg-black/30 border border-white/20 backdrop-blur"
+                      >
+                        <a href={brochureHref} target="_blank" rel="noopener noreferrer">
+                          <BookOpen className="w-4 h-4 mr-2" />
+                          Brochure
+                        </a>
+                      </Button>
+                    ) : null}
+                    {virtualTourHref ? (
+                      <Button
+                        asChild
+                        size="lg"
+                        className="h-12 px-6 bg-black/20 text-white hover:bg-black/30 border border-white/20 backdrop-blur"
+                      >
+                        <a href={virtualTourHref} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Virtual Tour
+                        </a>
+                      </Button>
+                    ) : null}
+                  </div>
 
-                {/* Action Buttons */}
-                <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-                  <CardContent className="p-6">
-                    <div className="space-y-3">
-                      <button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
-                        Apply Now
-                      </button>
-                      <button className="w-full border border-primary text-primary hover:bg-primary/10 font-semibold py-3 px-4 rounded-lg transition-colors">
-                        Download Brochure
-                      </button>
-                      <button className="w-full border border-white/20 text-white hover:bg-white/10 font-semibold py-3 px-4 rounded-lg transition-colors">
-                        Schedule Campus Visit
-                      </button>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Share Options */}
-                <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold text-white mb-4">Share This College</h3>
-                    <div className="flex gap-3">
-                      <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded text-sm transition-colors">
-                        Facebook
-                      </button>
-                      <button className="flex-1 bg-blue-400 hover:bg-blue-500 text-white font-semibold py-2 px-3 rounded text-sm transition-colors">
-                        Twitter
-                      </button>
-                      <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded text-sm transition-colors">
-                        WhatsApp
-                      </button>
-                    </div>
-                  </CardContent>
-                </Card>
+                  {description ? (
+                    <p className="mt-8 max-w-3xl text-sm md:text-base leading-relaxed text-white/90">
+                      {description}
+                    </p>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="container mx-auto px-4 py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start">
+            <div className="space-y-8">
+              {(infoTiles.length > 0 || approvals.length > 0) ? (
+                <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-2 text-lg font-semibold text-white">
+                      <Info className="h-5 w-5 text-primary" />
+                      Key facts
+                    </div>
+                    <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {infoTiles.slice(0, 9).map((tile) => (
+                        <div key={tile.label} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                          <p className="text-[11px] uppercase tracking-wider text-[#A1A1AA] mb-2">{tile.label}</p>
+                          <p className="text-white font-semibold">{String(tile.value)}</p>
+                        </div>
+                      ))}
+                    </div>
+                    {approvals.length > 0 ? (
+                      <div className="mt-5">
+                        <p className="text-sm text-[#A1A1AA] mb-2">Approvals</p>
+                        <div className="flex flex-wrap gap-2">
+                          {approvals.map((approval: string) => (
+                            <span
+                              key={approval}
+                              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white"
+                            >
+                              {approval}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </CardContent>
+                </Card>
+              ) : null}
+
+              <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                    <GraduationCap className="w-5 h-5 text-primary" />
+                    Courses & admission
+                  </h2>
+                  <p className="mt-2 text-sm text-[#A1A1AA]">
+                    A quick, student-friendly summary of the most relevant details.
+                  </p>
+
+                  {courses.length > 0 ? (
+                    <div className="mt-6 space-y-4">
+                      {courses.slice(0, 18).map((course) => {
+                        const direct = Array.isArray(course.entrance) && course.entrance.some((e) => /direct admission/i.test(String(e)))
+                        const merit = Array.isArray(course.entrance) && course.entrance.some((e) => /merit|board/i.test(String(e)))
+                        const feeMin = typeof course.fees_min === 'number' ? `₹${inrFormat.format(course.fees_min)}` : null
+                        const feeMax = typeof course.fees_max === 'number' ? `₹${inrFormat.format(course.fees_max)}` : null
+                        const feeText = feeMin && feeMax ? `${feeMin} - ${feeMax}` : feeMin || feeMax
+                        const entranceList =
+                          Array.isArray(course.entrance) && course.entrance.length > 0 ? course.entrance.slice(0, 3).filter(Boolean) : []
+
+                        return (
+                          <div key={course.id} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                            <div className="flex flex-col gap-1">
+                              <h3 className="text-base md:text-lg font-semibold text-white">
+                                {course.course}
+                                {course.specialization ? <span className="text-[#A1A1AA]"> — {course.specialization}</span> : null}
+                              </h3>
+                              <div className="flex flex-wrap gap-2 text-xs">
+                                {course.level ? (
+                                  <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-white">
+                                    {course.level}
+                                  </span>
+                                ) : null}
+                                {course.duration_years ? (
+                                  <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-white">
+                                    {course.duration_years} years
+                                  </span>
+                                ) : null}
+                                {direct ? (
+                                  <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-emerald-700">
+                                    Direct admission
+                                  </span>
+                                ) : null}
+                                {merit ? (
+                                  <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sky-700">
+                                    Merit based
+                                  </span>
+                                ) : null}
+                              </div>
+                            </div>
+
+                            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                              {feeText ? (
+                                <div className="text-[#A1A1AA]">
+                                  Fees: <span className="text-white font-medium">{feeText}</span>
+                                  {course.fees_type ? <span className="text-[#A1A1AA]"> ({course.fees_type})</span> : null}
+                                </div>
+                              ) : null}
+                              {course.eligibility ? (
+                                <div className="text-[#A1A1AA]">
+                                  Eligibility: <span className="text-white font-medium">{course.eligibility}</span>
+                                </div>
+                              ) : null}
+                              {course.placementpercent ? (
+                                <div className="text-[#A1A1AA]">
+                                  Placement: <span className="text-white font-medium">{course.placementpercent}</span>
+                                </div>
+                              ) : null}
+                              {course.averagepackage ? (
+                                <div className="text-[#A1A1AA]">
+                                  Avg package: <span className="text-white font-medium">{course.averagepackage}</span>
+                                </div>
+                              ) : null}
+                            </div>
+
+                            {entranceList.length > 0 ? (
+                              <div className="mt-4">
+                                <p className="text-xs text-[#A1A1AA] mb-2">Entrance</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {entranceList.map((exam) => (
+                                    <span key={exam} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white">
+                                      {exam}
+                                    </span>
+                                  ))}
+                                  {Array.isArray(course.entrance) && course.entrance.length > entranceList.length ? (
+                                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-[#A1A1AA]">
+                                      +{course.entrance.length - entranceList.length} more
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                        )
+                      })}
+
+                      {courses.length > 18 ? (
+                        <p className="text-xs text-[#A1A1AA]">
+                          Showing top 18 course rows for readability. More rows exist for this college.
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <p className="mt-4 text-sm text-[#A1A1AA]">No course rows available for this college yet.</p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            <aside className="space-y-6 lg:sticky lg:top-24">
+              {(websiteHref ||
+                emailValue ||
+                phoneValue ||
+                socialLinks.length > 0 ||
+                brochureHref ||
+                virtualTourHref ||
+                college.contact_last_checked_at) ? (
+                <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
+                  <CardContent className="p-6">
+                    <h2 className="text-lg font-semibold text-white">Official links & contact</h2>
+                    {college.contact_last_checked_at ? (
+                      <p className="mt-1 text-xs text-[#A1A1AA]">
+                        Last checked on {new Date(college.contact_last_checked_at).toLocaleDateString()}
+                      </p>
+                    ) : null}
+
+                    <div className="mt-5 space-y-3 text-sm">
+                      {websiteHref ? (
+                        <a
+                          href={websiteHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10"
+                        >
+                          <span className="inline-flex items-center gap-2 text-white">
+                            <Globe className="h-4 w-4" />
+                            Official Website
+                          </span>
+                          <ExternalLink className="h-4 w-4 text-[#A1A1AA]" />
+                        </a>
+                      ) : null}
+                      {brochureHref ? (
+                        <a
+                          href={brochureHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10"
+                        >
+                          <span className="inline-flex items-center gap-2 text-white">
+                            <BookOpen className="h-4 w-4" />
+                            Brochure
+                          </span>
+                          <ExternalLink className="h-4 w-4 text-[#A1A1AA]" />
+                        </a>
+                      ) : null}
+                      {virtualTourHref ? (
+                        <a
+                          href={virtualTourHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10"
+                        >
+                          <span className="inline-flex items-center gap-2 text-white">
+                            <ExternalLink className="h-4 w-4" />
+                            Virtual Tour
+                          </span>
+                          <ExternalLink className="h-4 w-4 text-[#A1A1AA]" />
+                        </a>
+                      ) : null}
+                      {emailValue ? (
+                        <a
+                          href={`mailto:${emailValue}`}
+                          className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10"
+                        >
+                          <Mail className="h-4 w-4 text-primary" />
+                          <span className="text-white font-medium break-all">{emailValue}</span>
+                        </a>
+                      ) : null}
+                      {phoneValue ? (
+                        <a
+                          href={`tel:${String(phoneValue).replace(/[^\d+]/g, '')}`}
+                          className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10"
+                        >
+                          <Phone className="h-4 w-4 text-primary" />
+                          <span className="text-white font-medium">{formatPhoneDisplay(String(phoneValue))}</span>
+                        </a>
+                      ) : null}
+                    </div>
+
+                    {socialLinks.length > 0 ? (
+                      <div className="mt-5">
+                        <p className="text-xs text-[#A1A1AA] mb-2">Socials</p>
+                        <div className="flex flex-wrap gap-2">
+                          {socialLinks.map(({ label, href, Icon }) => (
+                            <a
+                              key={label}
+                              href={href!}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={label}
+                              title={label}
+                              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10"
+                            >
+                              <Icon className="h-5 w-5" />
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </CardContent>
+                </Card>
+              ) : null}
+            </aside>
+          </div>
+        </section>
         </div>
       </div>
     )
   } catch (error) {
-    console.error('Error fetching college data:', error)
+    console.error(error)
     notFound()
   }
 }

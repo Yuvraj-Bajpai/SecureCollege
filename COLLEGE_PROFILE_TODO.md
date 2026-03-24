@@ -1,0 +1,25 @@
+- [x] Step 1: Create this TODO checklist in project root
+- [x] Step 2: Audit `colleges` schema and populated columns
+- [x] Step 2: Audit `college_courses` schema and populated columns
+- [x] Step 2: Note colleges with `youtube_url`, `hero_image_url`, `banner_url`, `logo_url`
+- [x] Step 2: Note courses with `entrance` entries for Direct Admission or Merit
+- [x] Step 3: Rewire college listing cards with schema-driven fields and logo fallback
+- [x] Step 4: Rebuild profile hero media priority (YouTube > image/banner > designed fallback)
+- [x] Step 5: Rewire profile header logo with resolve-check fallback
+- [x] Step 6: Rebuild profile courses section from `college_courses`
+- [x] Step 7: Add admission badges from `entrance` array logic
+- [x] Step 8: Rebuild info tiles/chips from `colleges` table with null-safe visibility
+- [x] Step 9: Rebuild social and contact links with null-safe visibility
+- [x] Step 10: Enforce runtime integrity rules and null-safe array rendering
+- [x] Step 11: Validate 5 profile scenarios and confirm listing/logo/badges/null-hiding
+- [x] Final: Run lint and typecheck
+
+Audit notes:
+- `colleges` rows: 76
+- `college_courses` rows: 715
+- Colleges with `youtube_url`: `abes-engineering-college`, `ajay-kumar-garg-engineering-college`, `amity-university-gurgaon`
+- Colleges with `hero_image_url`: `abes-engineering-college`, `amity-university-gurgaon`
+- Colleges with `banner_url`: none populated
+- Colleges with `logo_url`: 76 rows populated
+- Courses with `entrance` containing direct keywords: 52 rows
+- Courses with `entrance` containing merit/board keywords: 99 rows

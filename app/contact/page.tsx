@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { 
   Send, MapPin, Phone, Mail, Clock, CheckCircle2, AlertCircle,
-  Facebook, Twitter, Instagram, Linkedin, Youtube, ChevronDown, ChevronUp,
+  Instagram, Linkedin, ChevronDown, ChevronUp,
   MessageSquare, HelpCircle
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -452,17 +452,15 @@ export default function ContactPage() {
                       <h3 className="font-bold text-white mb-4">Follow Our Journey</h3>
                       <div className="flex flex-wrap gap-3">
                         {[
-                          { icon: Facebook, href: SOCIAL_LINKS.facebook, label: 'Facebook' },
-                          { icon: Twitter, href: SOCIAL_LINKS.twitter, label: 'Twitter' },
-                          { icon: Instagram, href: SOCIAL_LINKS.instagram, label: 'Instagram' },
                           { icon: Linkedin, href: SOCIAL_LINKS.linkedin, label: 'LinkedIn' },
-                          { icon: Youtube, href: SOCIAL_LINKS.youtube, label: 'YouTube' },
+                          { icon: Instagram, href: SOCIAL_LINKS.instagram, label: 'Instagram' },
+                          { icon: Mail, href: SOCIAL_LINKS.mailto, label: 'Email' },
                         ].map((social) => (
                           <a
                             key={social.label}
                             href={social.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            target={social.href.startsWith('http') ? '_blank' : undefined}
+                            rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                             className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center text-[#A1A1AA] hover:bg-primary hover:text-white transition-all border border-white/5 hover:border-primary"
                             aria-label={social.label}
                           >
