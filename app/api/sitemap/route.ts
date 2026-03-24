@@ -1,13 +1,14 @@
-import { NextRequest } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
+import { env } from '@/lib/env'
+
+export const dynamic = 'force-static'
 
 const BASE_URL = 'https://securecollege.in'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const supabase = createSupabaseServerClient()
-    
-    // Fetch all colleges for sitemap
+    const supabase = createClient(env.supabase.url, env.supabase.anonKey)
+
     const { data: colleges } = await supabase
       .from('colleges')
       .select('slug, updated_at')
@@ -50,13 +51,12 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=86400, stale-while-revalidate', // 24 hours
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate',
       },
     })
   } catch (error) {
     console.error('Sitemap generation error:', error)
-    
-    // Fallback basic sitemap
+
     const fallbackSitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
