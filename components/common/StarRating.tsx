@@ -18,6 +18,7 @@ export function StarRating({
   showNumber = false,
   className = ''
 }: StarRatingProps) {
+  const safeRating = Number.isFinite(rating) ? Math.min(maxRating, Math.max(0, rating)) : 0
   const sizeClasses = {
     sm: 'w-3 h-3',
     md: 'w-4 h-4',
@@ -31,7 +32,7 @@ export function StarRating({
           key={i}
           className={cn(
             sizeClasses[size],
-            i < Math.round(rating)
+            i < Math.round(safeRating)
               ? 'fill-primary text-primary'
               : 'text-gray-300'
           )}
@@ -39,7 +40,7 @@ export function StarRating({
       ))}
       {showNumber && (
         <span className="ml-1 text-sm font-medium text-text-secondary">
-          {rating.toFixed(1)}
+          {safeRating.toFixed(1)}
         </span>
       )}
     </div>

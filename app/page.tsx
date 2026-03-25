@@ -6,8 +6,9 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { PremiumCard } from '@/components/ui/PremiumCard'
-import { Star, GraduationCap, MapPin, FileText, Target } from 'lucide-react'
+import { Star, GraduationCap, Building2 } from 'lucide-react'
 import { useBookingModal } from '@/contexts/BookingModalContext'
+import { STUDENT_TESTIMONIALS } from '@/lib/constants'
 
 const ParticleBackground = dynamic(
   () => import('@/components/common/ParticleBackground').then((mod) => mod.ParticleBackground),
@@ -39,7 +40,7 @@ export default function HomePage() {
         }}
       />
 
-      <div className="relative min-h-screen bg-[#0A0A0A] bg-gradient-to-b from-[#0F0F0F] to-[#0A0A0A] text-white overflow-hidden">
+      <div className="relative min-h-screen bg-[#0A0A0A] bg-gradient-to-b from-[#0F0F0F] to-[#0A0A0A] text-white overflow-visible">
         <ParticleBackground />
         <div className="fixed inset-0 pointer-events-none z-0">
           <div className="absolute top-0 inset-x-0 h-[40rem] bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(91,141,239,0.1),transparent)] blur-3xl" />
@@ -50,7 +51,7 @@ export default function HomePage() {
         </div>
 
         <div className="relative z-10">
-          <section className="relative overflow-hidden">
+          <section className="relative overflow-visible">
             <div className="relative mx-auto max-w-7xl px-6 pt-32 pb-16">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -64,71 +65,53 @@ export default function HomePage() {
                 >
                   Low Rank? You Can Still Secure a Great College.
                 </h1>
-                <div className="mt-6 text-base text-gray-300 md:text-lg">
+                <div className="mt-6 space-y-3 text-base text-gray-300 md:text-lg">
                   <p>
                     From choosing the right college to admissions, hostel support, scholarships, and mentorship —{' '}
-                    <span className="font-semibold text-white whitespace-nowrap">Secure College</span> guides you at every step.
+                    <span className="font-semibold text-white whitespace-nowrap">Secure College</span> guides you at
+                    every step.
                   </p>
                 </div>
-                <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button
-                      asChild
-                      size="xl"
-                      className="h-12 sm:h-14 px-6 sm:px-10 bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white text-base sm:text-lg font-semibold shadow-xl hover:shadow-xl w-full sm:w-auto"
+                <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
+                    <Link
+                      href="/students"
+                      className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-transparent bg-gradient-to-r from-primary-600 to-primary-800 px-4 py-3 text-base font-semibold text-white shadow-lg transition-shadow hover:shadow-primary-glow sm:h-14 sm:min-w-[240px] sm:px-8"
                     >
-                      <Link href="/students">Start My College Search</Link>
-                    </Button>
+                      Start My College Search
+                    </Link>
                   </motion.div>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                    <Button
-                      asChild
-                      size="xl"
-                      variant="outline"
-                      className="h-12 sm:h-14 px-6 sm:px-10 border-white/20 bg-white/5 text-white hover:bg-white/10 w-full sm:w-auto"
+                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
+                    <Link
+                      href="/partner"
+                      className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base font-semibold text-white backdrop-blur-xl transition-shadow hover:shadow-primary-glow sm:h-14 sm:min-w-[260px] sm:px-8"
                     >
-                      <Link href="/partner">Become Our College Partner</Link>
-                    </Button>
+                      Become Our College Partner
+                    </Link>
                   </motion.div>
                 </div>
-                <div className="mt-8 w-full">
-                  <div className="mx-auto max-w-3xl text-center">
-                    <h2
-                      className="text-2xl font-semibold text-white sm:text-3xl"
-                      style={{ textShadow: '0 0 14px rgba(91, 141, 239, 0.25)' }}
-                    >
-                      Our Impact
-                    </h2>
-                  </div>
-                  <div className="mt-6 grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-                    {[
-                      {
-                        icon: GraduationCap,
-                        label: '50+ Verified College Partners',
-                      },
-                      {
-                        icon: MapPin,
-                        label: 'Presence Across 8+ States',
-                      },
-                      {
-                        icon: FileText,
-                        label: 'Complete Admission Support',
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.label}
-                        className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-xl transition-shadow hover:shadow-primary-glow"
+                <div className="mt-8 w-full text-center">
+                  <h2
+                    className="text-2xl font-semibold text-white sm:text-3xl"
+                    style={{ textShadow: '0 0 14px rgba(91, 141, 239, 0.25)' }}
+                  >
+                    Our Impact
+                  </h2>
+                </div>
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                  {['50+ Verified College Partners', 'Presence Across 8+ States', 'Complete Admission Support'].map(
+                    (badge) => (
+                      <span
+                        key={badge}
+                        className="rounded-full bg-[#8B5CF6]/10 text-[#A78BFA] border border-[#8B5CF6]/20 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium"
                       >
-                        <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                          <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
-                        </div>
-                        <p className="text-xs sm:text-sm lg:text-base font-medium text-white lg:whitespace-nowrap">{item.label}</p>
-                      </div>
-                    ))}
-                  </div>
+                        {badge}
+                      </span>
+                    )
+                  )}
                 </div>
                 <div className="mt-8 w-full">
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-6 py-6 sm:px-8 backdrop-blur-xl">
+                  <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 px-6 py-6 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:px-8">
                     <div className="text-center sm:text-left sm:mr-3">
                       <p className="text-sm sm:text-base text-white">
                         Complete Admission Support — College Selection, Application Process, Hostel Coordination,
@@ -138,7 +121,7 @@ export default function HomePage() {
                     <Button
                       size="xl"
                       onClick={openModal}
-                      className="shrink-0 h-10 sm:h-12 px-6 sm:px-8 text-sm sm:text-base bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl w-full sm:w-auto"
+                      className="shrink-0 h-10 w-full bg-white text-black hover:bg-gray-200 sm:h-12 sm:w-auto sm:px-8 text-sm sm:text-base font-semibold shadow-lg"
                     >
                       Book Free Counseling
                     </Button>
@@ -284,58 +267,33 @@ export default function HomePage() {
                 transition={{ duration: 0.6 }}
                 className="text-center"
               >
-                <h2 className="text-3xl font-semibold text-white sm:text-4xl">Testimonials</h2>
-                <p className="mt-3 text-base text-white/70">Students who shaped their future with us.</p>
+                <h2 className="text-3xl font-semibold text-white sm:text-4xl">Loved by ambitious students</h2>
+                <p className="mt-3 text-base text-white/70">Stories from students who secured their ideal college.</p>
               </motion.div>
-              <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                {[
-                  {
-                    name: 'Rahul Sharma',
-                    college: 'IIIT Delhi',
-                    text: 'SecureCollege guided me through the entire admission process with clarity and confidence.',
-                    rating: 5
-                  },
-                  {
-                    name: 'Priya Patel',
-                    college: 'NSUT',
-                    text: 'The counselors were honest, supportive, and made my shortlist easy to finalize.',
-                    rating: 5
-                  },
-                  {
-                    name: 'Amit Kumar',
-                    college: 'ABES IT',
-                    text: 'From campus tours to hostel support, everything was handled seamlessly.',
-                    rating: 5
-                  },
-                  {
-                    name: 'Neha Singh',
-                    college: 'JSS Academy',
-                    text: 'I loved the premium experience. SecureCollege truly felt like a partner.',
-                    rating: 5
-                  }
-                ].map((testimonial, idx) => (
+              <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
+                {STUDENT_TESTIMONIALS.map((testimonial, idx) => (
                   <motion.div
                     key={testimonial.name}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: idx * 0.08 }}
+                    transition={{ duration: 0.5, delay: idx * 0.1 }}
                     viewport={{ once: true }}
                     whileHover={{ y: -5 }}
                   >
-                    <PremiumCard className="h-full text-white transition-shadow hover:shadow-primary-glow">
+                    <Card className="h-full border border-white/10 bg-white/5 backdrop-blur-xl text-white transition-shadow hover:shadow-primary-glow">
                       <CardContent className="p-6">
                         <div className="mb-4 flex items-center gap-2">
                           {[...Array(testimonial.rating)].map((_, i) => (
                             <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                           ))}
                         </div>
-                        <p className="text-sm leading-relaxed text-white/80">&ldquo;{testimonial.text}&rdquo;</p>
+                        <p className="text-sm leading-relaxed text-white/80">{testimonial.text}</p>
                         <div className="mt-6 border-t border-white/5 pt-4">
                           <p className="text-base font-semibold text-white">{testimonial.name}</p>
                           <p className="text-xs text-white/60">{testimonial.college}</p>
                         </div>
                       </CardContent>
-                    </PremiumCard>
+                    </Card>
                   </motion.div>
                 ))}
               </div>

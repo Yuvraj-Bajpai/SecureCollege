@@ -121,6 +121,28 @@ export const SOCIAL_LINKS = {
   mailto: "mailto:securecollege6@gmail.com",
 }
 
+/** Shared copy for home + students “Loved by ambitious students” sections */
+export const STUDENT_TESTIMONIALS = [
+  {
+    name: 'Aayush Sharma',
+    college: 'Galgotias University',
+    text: 'Secure College made my admission process very smooth. Abhay sir and Sahil sir were very responsive and helped me with everything, from admission form filling to last-moment formalities and even hostel admission support.',
+    rating: 5,
+  },
+  {
+    name: 'Ishita Dayal',
+    college: 'ABES College',
+    text: 'My experience with Secure College was really good. Avantika ma’am and Abhay sir guided me at every step, cleared all doubts quickly, and made admission plus hostel process easy and stress-free.',
+    rating: 5,
+  },
+  {
+    name: 'Rahul Joshi',
+    college: 'JSS Noida',
+    text: 'Secure College helped me a lot during my admission. Sahil sir and Abhay sir were always responsive, supported me in form filling, documentation, and hostel admission, and made the whole process simple and smooth.',
+    rating: 5,
+  },
+] as const
+
 export const FOOTER_LINKS = {
   company: [
     { label: "About Us", href: "/about" },

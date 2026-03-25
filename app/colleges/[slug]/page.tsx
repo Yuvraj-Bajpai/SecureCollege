@@ -22,6 +22,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { ParticleBackground } from '@/components/common/ParticleBackground'
 import { CollegeLogoImage } from '@/components/common/CollegeLogoImage'
 import { extractYouTubeVideoId, formatPhoneDisplay, isValidSocialUrl } from '@/lib/collegeProfileUtils'
+import { ScheduleVisitButton } from '@/components/common/ScheduleVisitButton'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 120
@@ -435,6 +436,7 @@ export default async function StudentCollegeProfilePage({ params }: { params: { 
                     ) : null}
 
                     <div className="mt-5 space-y-3 text-sm">
+                      <ScheduleVisitButton collegeName={college.name} />
                       {websiteHref ? (
                         <a
                           href={websiteHref}

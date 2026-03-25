@@ -214,7 +214,7 @@ export function BookCounsellingModal() {
                 Sign in to book a free counseling session.
               </p>
               <Button
-                className="w-full bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold"
+                className="w-full bg-white text-black hover:bg-gray-200 font-semibold"
                 onClick={handleGoogleLogin}
               >
                 Continue with Google

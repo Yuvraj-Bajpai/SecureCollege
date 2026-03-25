@@ -277,14 +277,14 @@ export default function CompareClient() {
         </div>
 
         <Card className="mt-6 border border-white/10 bg-white/5 backdrop-blur-xl">
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.1fr_1fr]">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-200">Select a Course to Compare</label>
+          <CardContent className="p-6 md:p-8">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.1fr_1fr]">
+              <div className="space-y-3">
+                <label className="text-base md:text-lg font-semibold text-white">Select a Course to Compare</label>
                 <select
                   value={selectedCourse}
                   onChange={(event) => setSelectedCourse(event.target.value)}
-                  className="h-12 w-full rounded-xl border border-white/15 bg-black/60 px-3 text-sm text-white"
+                  className="h-14 w-full rounded-xl border border-white/15 bg-black/60 px-4 text-base text-white md:text-lg"
                 >
                   <option value="" disabled className="bg-black text-white">
                     Select a course
@@ -296,16 +296,16 @@ export default function CompareClient() {
                   ))}
                 </select>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-200">Search and add a college</label>
+              <div className="space-y-3">
+                <label className="text-base md:text-lg font-semibold text-white">Search and add a college</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A1A1AA]" />
+                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#A1A1AA]" />
                   <Input
                     value={searchQuery}
                     onChange={(event) => setSearchQuery(event.target.value)}
                     placeholder={selectedCourse ? 'Search and add a college' : 'Select a course first'}
                     disabled={!selectedCourse}
-                    className="h-12 pl-10 bg-black/60 border-white/15 text-white placeholder:text-[#A1A1AA]"
+                    className="h-14 pl-12 text-base md:text-lg bg-black/60 border-white/15 text-white placeholder:text-[#A1A1AA]"
                   />
                 </div>
                 {isLoadingSearch ? (

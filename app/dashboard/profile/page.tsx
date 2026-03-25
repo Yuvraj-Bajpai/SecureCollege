@@ -23,6 +23,9 @@ import {
   Calendar,
   FileText,
   ArrowRight,
+  School,
+  ClipboardList,
+  Building2,
 } from 'lucide-react'
 
 type ProfileRow = {
@@ -30,6 +33,8 @@ type ProfileRow = {
   phone: string | null
   age: string | null
   course: string | null
+  current_status?: string | null
+  target_course?: string | null
 }
 
 type BookingRow = {
@@ -37,6 +42,7 @@ type BookingRow = {
   status: string | null
   notes: string | null
   created_at: string
+  type?: 'counselling' | 'campus_visit'
 }
 
 export default function ProfilePage() {
@@ -52,6 +58,8 @@ export default function ProfilePage() {
     phone: null,
     age: null,
     course: null,
+    current_status: null,
+    target_course: null,
   })
 
   const [meta, setMeta] = useState({
@@ -60,6 +68,10 @@ export default function ProfilePage() {
     city: '',
     state: '',
     pincode: '',
+    high_school_percent: '',
+    intermediate_percent: '',
+    entrance_exam: '',
+    entrance_rank: '',
   })
 
   const [bookings, setBookings] = useState<BookingRow[]>([])
@@ -85,11 +97,15 @@ export default function ProfilePage() {
         city: String(metadata.city || ''),
         state: String(metadata.state || ''),
         pincode: String(metadata.pincode || ''),
+        high_school_percent: String(metadata.high_school_percent || ''),
+        intermediate_percent: String(metadata.intermediate_percent || ''),
+        entrance_exam: String(metadata.entrance_exam || ''),
+        entrance_rank: String(metadata.entrance_rank || ''),
       })
 
       const { data: profileRow } = await supabase
         .from('profiles')
-        .select('full_name, phone, age, course')
+        .select('full_name, phone, age, course, current_status, target_course')
         .eq('id', sessionUser.id)
         .maybeSingle()
 
@@ -99,6 +115,8 @@ export default function ProfilePage() {
           phone: profileRow.phone,
           age: profileRow.age,
           course: profileRow.course,
+          current_status: profileRow.current_status,
+          target_course: profileRow.target_course,
         })
       } else {
         setProfile({
@@ -106,6 +124,8 @@ export default function ProfilePage() {
           phone: null,
           age: null,
           course: null,
+          current_status: null,
+          target_course: null,
         })
       }
 
@@ -114,9 +134,13 @@ export default function ProfilePage() {
         .select('id, status, notes, created_at')
         .eq('student_id', sessionUser.id)
         .order('created_at', { ascending: false })
-        .limit(5)
 
-      setBookings((bookingRows || []) as BookingRow[])
+      const mappedBookings = (bookingRows || []).map(b => ({
+        ...b,
+        type: b.notes?.includes('Visit') ? 'campus_visit' : 'counselling'
+      })) as BookingRow[]
+
+      setBookings(mappedBookings)
       setLoading(false)
     }
 
@@ -136,6 +160,7 @@ export default function ProfilePage() {
       meta.city.trim().length > 0,
       meta.state.trim().length > 0,
       meta.pincode.trim().length > 0,
+      meta.intermediate_percent.trim().length > 0,
     ]
     const done = checks.filter(Boolean).length
     return Math.round((done / checks.length) * 100)
@@ -183,6 +208,8 @@ export default function ProfilePage() {
           phone,
           age: age || null,
           course: course || null,
+          current_status: profile.current_status || null,
+          target_course: profile.target_course || null,
         },
         { onConflict: 'id' }
       )
@@ -202,6 +229,10 @@ export default function ProfilePage() {
         city: meta.city.trim(),
         state: meta.state.trim(),
         pincode: meta.pincode.trim(),
+        high_school_percent: meta.high_school_percent.trim(),
+        intermediate_percent: meta.intermediate_percent.trim(),
+        entrance_exam: meta.entrance_exam.trim(),
+        entrance_rank: meta.entrance_rank.trim(),
       },
     })
 
@@ -377,21 +408,38 @@ export default function ProfilePage() {
 
                 <PremiumCard className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold text-white">Recent Bookings</h2>
-                    <FileText className="w-5 h-5 text-primary" />
+                    <h2 className="text-lg font-bold text-white">Registrations & Visits</h2>
+                    <ClipboardList className="w-5 h-5 text-primary" />
                   </div>
                   {bookings.length === 0 ? (
-                    <p className="text-sm text-[#A1A1AA]">No counselling bookings yet.</p>
+                    <p className="text-sm text-[#A1A1AA]">No bookings or visits scheduled yet.</p>
                   ) : (
                     <div className="space-y-3">
                       {bookings.map((b) => (
                         <div key={b.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-white font-semibold capitalize">
-                              {b.status || 'pending'}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              {b.type === 'campus_visit' ? (
+                                <Building2 className="w-4 h-4 text-primary" />
+                              ) : (
+                                <FileText className="w-4 h-4 text-primary" />
+                              )}
+                              <span className="text-sm text-white font-semibold capitalize">
+                                {b.type === 'campus_visit' ? 'Campus Visit' : 'Counselling'}
+                              </span>
+                            </div>
                             <span className="text-xs text-[#A1A1AA]">
                               {new Date(b.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="mt-2 flex items-center justify-between">
+                            <span className={cn(
+                              "text-[10px] px-2 py-0.5 rounded-full border",
+                              b.status === 'completed' 
+                                ? "border-green-500/30 bg-green-500/10 text-green-400"
+                                : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400"
+                            )}>
+                              {b.status || 'pending'}
                             </span>
                           </div>
                           {b.notes && <p className="text-xs text-[#A1A1AA] mt-2 line-clamp-2">{b.notes}</p>}
@@ -403,6 +451,88 @@ export default function ProfilePage() {
               </div>
 
               <div className="lg:col-span-8 space-y-6">
+                <PremiumCard className="p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                      <School className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-white">Academic Profile</h2>
+                      <p className="text-sm text-[#A1A1AA]">Your academic background for better recommendations.</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-[#A1A1AA]">Current Status</label>
+                      <select
+                        value={profile.current_status || ''}
+                        onChange={(e) => updateProfileField('current_status', e.target.value)}
+                        className="h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                      >
+                        <option value="" disabled className="bg-[#121212]">Select status</option>
+                        <option value="Class 12th" className="bg-[#121212]">Class 12th</option>
+                        <option value="Dropper" className="bg-[#121212]">Dropper</option>
+                        <option value="Graduate" className="bg-[#121212]">Graduate</option>
+                        <option value="Other" className="bg-[#121212]">Other</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-[#A1A1AA]">Target Course</label>
+                      <select
+                        value={profile.target_course || ''}
+                        onChange={(e) => updateProfileField('target_course', e.target.value)}
+                        className="h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                      >
+                        <option value="" disabled className="bg-[#121212]">Select course</option>
+                        <option value="B.Tech" className="bg-[#121212]">B.Tech</option>
+                        <option value="BBA" className="bg-[#121212]">BBA</option>
+                        <option value="BCA" className="bg-[#121212]">BCA</option>
+                        <option value="MBA" className="bg-[#121212]">MBA</option>
+                        <option value="Law" className="bg-[#121212]">Law</option>
+                        <option value="Design" className="bg-[#121212]">Design</option>
+                        <option value="Other" className="bg-[#121212]">Other</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-[#A1A1AA]">10th Percentage / CGPA</label>
+                      <Input
+                        value={meta.high_school_percent}
+                        onChange={(e) => updateMetaField('high_school_percent', e.target.value)}
+                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
+                        placeholder="e.g. 90% or 9.5 CGPA"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-[#A1A1AA]">12th Percentage (Intermediate)</label>
+                      <Input
+                        value={meta.intermediate_percent}
+                        onChange={(e) => updateMetaField('intermediate_percent', e.target.value)}
+                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
+                        placeholder="e.g. 85%"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-[#A1A1AA]">Entrance Exam (JEE/CUET/etc.)</label>
+                      <Input
+                        value={meta.entrance_exam}
+                        onChange={(e) => updateMetaField('entrance_exam', e.target.value)}
+                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
+                        placeholder="e.g. JEE Main"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-[#A1A1AA]">Entrance Rank / Percentile</label>
+                      <Input
+                        value={meta.entrance_rank}
+                        onChange={(e) => updateMetaField('entrance_rank', e.target.value)}
+                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
+                        placeholder="e.g. 45000"
+                      />
+                    </div>
+                  </div>
+                </PremiumCard>
+
                 <PremiumCard className="p-6">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">

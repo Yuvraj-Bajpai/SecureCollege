@@ -35,10 +35,16 @@ export default async function StudentCollegesPage() {
     .select('id,name,slug,city,state,rating,logo_url,type,naac_grade,nirf_rank,description,courses')
     .order('rating', { ascending: false })
 
+  const resolveSlug = (c: CollegeRow) => {
+    const raw = c.slug != null ? String(c.slug).trim() : ''
+    if (raw.length > 0) return raw
+    return String(c.id).trim() || 'college'
+  }
+
   const mapped: CollegeCardData[] = !error && data
     ? (data as CollegeRow[]).map((c) => {
         return {
-          id: c.slug.trim(),
+          id: resolveSlug(c),
           name: c.name,
           city: c.city,
           state: c.state,
@@ -79,6 +85,8 @@ export default async function StudentCollegesPage() {
           profileBasePath="/colleges"
           footerLabel="View Profile"
           stickySidebar
+          filterLocationMode="city-only"
+          filterHideSections={['rating', 'facilities', 'special']}
         />
       </div>
     </div>

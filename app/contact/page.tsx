@@ -302,7 +302,7 @@ function ContactForm() {
               type="submit"
               size="xl"
               disabled={isSubmitting}
-              className="w-full bg-primary hover:bg-primary/90 text-white font-bold"
+              className="w-full bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-bold border-0"
             >
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
@@ -408,7 +408,7 @@ export default function ContactPage() {
                 viewport={{ once: true }}
               >
                 <PremiumCard className="h-full">
-                  <div className="space-y-8">
+                  <div className="space-y-8 p-6 sm:p-8">
                     <div>
                       <h2 className="text-2xl font-bold text-white mb-6">Contact Information</h2>
                       <div className="space-y-6">
@@ -416,11 +416,10 @@ export default function ContactPage() {
                           <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0 border border-primary/20">
                             <MapPin className="w-6 h-6 text-primary" />
                           </div>
-                          <div>
+                          <div className="min-w-0 flex-1 pr-1">
                             <h3 className="font-bold text-white mb-1">Our Office</h3>
                             <p className="text-[#A1A1AA] text-sm leading-relaxed">
-                              123 Education Street, New Delhi,<br />
-                              Delhi 110001, India
+                              Knowledge Park II, Greater Noida, 201310
                             </p>
                           </div>
                         </div>
@@ -429,10 +428,12 @@ export default function ContactPage() {
                           <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0 border border-primary/20">
                             <Phone className="w-6 h-6 text-primary" />
                           </div>
-                          <div>
+                          <div className="min-w-0 flex-1 pr-1">
                             <h3 className="font-bold text-white mb-1">Phone</h3>
-                            <p className="text-[#A1A1AA] text-sm">{SITE_CONFIG.phone}</p>
-                            <p className="text-xs text-[#52525B] mt-1">Mon-Fri, 9AM-6PM IST</p>
+                            <p className="text-[#A1A1AA] text-sm">9044143686</p>
+                            <p className="text-xs font-semibold text-primary mt-1.5 tracking-wide">
+                              Mon-Fri, 9AM-6PM IST
+                            </p>
                           </div>
                         </div>
 
@@ -440,7 +441,7 @@ export default function ContactPage() {
                           <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0 border border-primary/20">
                             <Mail className="w-6 h-6 text-primary" />
                           </div>
-                          <div>
+                          <div className="min-w-0 flex-1 pr-1">
                             <h3 className="font-bold text-white mb-1">Email</h3>
                             <p className="text-[#A1A1AA] text-sm">{SITE_CONFIG.contactEmail}</p>
                           </div>
@@ -510,7 +511,7 @@ export default function ContactPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-20 bg-white/[0.02]">
+        <section id="support-faq" className="py-20 bg-white/[0.02] scroll-mt-28">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-16">

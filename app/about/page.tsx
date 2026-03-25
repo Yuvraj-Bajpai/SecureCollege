@@ -406,7 +406,7 @@ export default function AboutPage() {
                     <Button
                       asChild
                       size="lg"
-                      className="w-full h-12 px-8 bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl sm:w-auto"
+                      className="w-full h-12 px-8 bg-white text-black hover:bg-gray-200 font-semibold shadow-lg hover:shadow-xl sm:w-auto"
                     >
                       <Link href="/students">Find My College</Link>
                     </Button>

@@ -3,21 +3,38 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, User as UserIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/common/Logo'
 import { NAVIGATION_LINKS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
+import type { User } from '@supabase/supabase-js'
 
 export function Header() {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   return (
@@ -62,16 +79,33 @@ export function Header() {
             >
               <Link href="/compare">Compare Colleges</Link>
             </Button>
-            <Button variant="ghost" asChild className="text-foreground hover:text-primary">
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              className="bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
-            >
-              <Link href="/signup">Sign Up</Link>
-            </Button>
+            {user ? (
+              <Button
+                asChild
+                variant="ghost"
+                className="flex items-center gap-2 text-foreground hover:text-primary transition-all"
+              >
+                <Link href="/dashboard/profile">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <UserIcon className="h-4 w-4" />
+                  </div>
+                  <span>Profile</span>
+                </Link>
+              </Button>
+            ) : (
+              <>
+                <Button variant="ghost" asChild className="text-foreground hover:text-primary">
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
+                >
+                  <Link href="/signup">Sign Up</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -145,17 +179,30 @@ export function Header() {
                 Compare Colleges
               </Link>
             </Button>
-            <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" asChild className="w-full rounded-xl border-white/10 hover:bg-white/5">
-                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>Login</Link>
-              </Button>
+            {user ? (
               <Button
                 asChild
-                className="bg-white text-black hover:bg-gray-200 w-full rounded-xl"
+                variant="outline"
+                className="w-full rounded-xl border-white/10 hover:bg-white/5 text-white"
               >
-                <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>Sign Up</Link>
+                <Link href="/dashboard/profile" onClick={() => setIsMobileMenuOpen(false)}>
+                  <UserIcon className="w-4 h-4 mr-2" />
+                  My Profile
+                </Link>
               </Button>
-            </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                <Button variant="outline" asChild className="w-full rounded-xl border-white/10 hover:bg-white/5">
+                  <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>Login</Link>
+                </Button>
+                <Button
+                  asChild
+                  className="bg-white text-black hover:bg-gray-200 w-full rounded-xl"
+                >
+                  <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>Sign Up</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -7,12 +7,11 @@ import { Logo } from '@/components/common/Logo'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SITE_CONFIG, SOCIAL_LINKS } from '@/lib/constants'
-import { 
-  Linkedin, 
-  Instagram, 
-  Mail, 
+import {
+  Linkedin,
+  Instagram,
+  Mail,
   Phone,
-  Check
 } from 'lucide-react'
 import { ParticleBackground as ParticleBackgroundType } from '@/components/common/ParticleBackground'
 import { supabase } from '@/lib/supabase'
@@ -88,7 +87,7 @@ export function Footer() {
               />
               <Button
                 type="submit"
-                className="h-12 px-8 bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg hover:shadow-xl"
+                className="h-12 px-8 bg-white text-black hover:bg-gray-200 font-semibold shadow-lg hover:shadow-xl"
                 disabled={isLoading}
               >
                 {isLoading ? 'Subscribing...' : 'Subscribe'}
@@ -110,19 +109,13 @@ export function Footer() {
 
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-12 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
           {/* Column 1: About */}
           <div>
             <Logo size="xl" className="mb-6" />
             <p className="text-sm text-text-secondary mb-6 max-w-xs">
               Helping students find their perfect college across every course with complete transparency and insider insights.
             </p>
-            
-            {/* Trust Badge */}
-            <div className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <Check className="w-4 h-4" />
-              100% Free for Students
-            </div>
 
             {/* Social Media */}
             <div className="flex gap-3">
@@ -152,10 +145,9 @@ export function Footer() {
               {[
                 { label: 'All Colleges', href: '/colleges' },
                 { label: 'Compare Colleges', href: '/compare' },
-                { label: 'Virtual Tours', href: '/virtual-tours' },
                 { label: 'Premium Features', href: '/premium' },
                 { label: 'Blog & Resources', href: '/blog' },
-                { label: 'FAQs', href: '/faqs' },
+                { label: 'FAQs', href: '/contact#support-faq' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
@@ -174,7 +166,6 @@ export function Footer() {
             <h3 className="text-base font-semibold text-primary mb-4">Resources</h3>
             <ul className="space-y-3">
               {[
-                { label: 'College Reviews', href: '/reviews' },
                 { label: 'Contact Us', href: '/contact' },
                 { label: 'About Us', href: '/about' },
                 { label: 'Partner With Us', href: '/partner' },
@@ -188,37 +179,6 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
-            </ul>
-          </div>
-
-          {/* Column 4: Explore by State */}
-          <div>
-            <h3 className="text-base font-semibold text-primary mb-4">Explore by State</h3>
-            <ul className="space-y-3">
-              {[
-                { label: 'Uttar Pradesh Colleges', href: '/colleges/uttar-pradesh' },
-                { label: 'Delhi NCR Colleges', href: '/colleges/delhi-ncr' },
-                { label: 'Haryana Colleges', href: '/colleges/haryana' },
-                { label: 'Rajasthan Colleges', href: '/colleges/rajasthan' },
-                { label: 'Maharashtra Colleges', href: '/colleges/maharashtra' },
-              ].map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-text-secondary hover:text-primary transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link
-                  href="/colleges/all-states"
-                  className="text-sm text-primary hover:text-primary-600 font-medium inline-flex items-center gap-1"
-                >
-                  View All States →
-                </Link>
-              </li>
             </ul>
           </div>
         </div>
@@ -252,13 +212,23 @@ export function Footer() {
                 <Mail className="w-4 h-4" />
                 <span className="hidden sm:inline">{SITE_CONFIG.contactEmail}</span>
               </a>
-              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-white flex items-center gap-1">
+              <a
+                href={SOCIAL_LINKS.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="hover:text-white inline-flex items-center justify-center"
+              >
                 <Linkedin className="w-4 h-4" />
-                <span className="hidden sm:inline">LinkedIn</span>
               </a>
-              <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-white flex items-center gap-1">
+              <a
+                href={SOCIAL_LINKS.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="hover:text-white inline-flex items-center justify-center"
+              >
                 <Instagram className="w-4 h-4" />
-                <span className="hidden sm:inline">Instagram</span>
               </a>
               <a href={`tel:${SITE_CONFIG.phone}`} className="hover:text-white flex items-center gap-1">
                 <Phone className="w-4 h-4" />

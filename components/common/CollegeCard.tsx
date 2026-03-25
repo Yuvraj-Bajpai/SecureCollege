@@ -54,7 +54,7 @@ export function CollegeCard({
   return (
     <Card 
       className={cn(
-        'group overflow-hidden cursor-pointer border border-white/10 bg-black transition-shadow duration-300 hover:shadow-primary-glow',
+        'group overflow-hidden cursor-pointer border border-white/10 bg-white/5 backdrop-blur-xl transition-shadow duration-300 hover:shadow-primary-glow',
         college.highlight && 'ring-2 ring-primary',
         className
       )}
@@ -82,7 +82,11 @@ export function CollegeCard({
                 </span>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <StarRating rating={college.rating} size="sm" showNumber />
+                <StarRating
+                  rating={Number.isFinite(Number(college.rating)) ? Number(college.rating) : 0}
+                  size="sm"
+                  showNumber
+                />
               </div>
             </div>
           </div>

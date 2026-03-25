@@ -29,6 +29,9 @@ interface FilterSidebarProps {
   filters: FilterState
   onChange: (filters: FilterState) => void
   activeFiltersCount: number
+  /** Default: show state + city. Use city-only to hide state row. */
+  locationMode?: 'full' | 'city-only'
+  hideSections?: ('rating' | 'facilities' | 'special')[]
 }
 
 const STATES = ['Uttar Pradesh', 'Delhi', 'Maharashtra', 'Karnataka', 'Tamil Nadu', 'Gujarat']
@@ -39,7 +42,14 @@ const ACCREDITATIONS = ['NAAC', 'NBA', 'AICTE']
 const FACILITIES = ['Hostel', 'Virtual Tour', 'Wi-Fi', 'Library', 'Sports', 'Cafeteria', 'Gym', 'Medical']
 const SPECIAL = ['Scholarship Available', 'Loan Assistance', '100% Placement', 'Campus Interview']
 
-export function FilterSidebar({ filters, onChange, activeFiltersCount }: FilterSidebarProps) {
+export function FilterSidebar({
+  filters,
+  onChange,
+  activeFiltersCount,
+  locationMode = 'full',
+  hideSections = [],
+}: FilterSidebarProps) {
+  const hide = (key: 'rating' | 'facilities' | 'special') => hideSections.includes(key)
   const [expanded, setExpanded] = useState<string[]>(['location', 'branch'])
 
   const toggleExpanded = (section: string) => {
@@ -127,7 +137,7 @@ export function FilterSidebar({ filters, onChange, activeFiltersCount }: FilterS
     <aside className="w-full lg:w-80 space-y-4">
       {/* Active Filters */}
       {activeFiltersCount > 0 && (
-        <Card>
+        <Card className="border border-white/10 bg-white/5 backdrop-blur-xl text-white">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -202,38 +212,40 @@ export function FilterSidebar({ filters, onChange, activeFiltersCount }: FilterS
       )}
 
       {/* Filter Options */}
-      <Card>
+      <Card className="border border-white/10 bg-white/5 backdrop-blur-xl text-white">
         <CardContent className="p-0">
           {/* Location */}
           <FilterSection title="Location" section="location">
             <div className="space-y-3">
-              <div>
-                <p className="text-xs font-medium text-gray-700 mb-2">State</p>
-                <div className="space-y-2">
-                  {STATES.map(state => (
-                    <label key={state} className="flex items-center gap-2 cursor-pointer text-sm">
-                      <input
-                        type="checkbox"
-                        checked={filters.location.includes(state)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            updateFilter('location', [...filters.location, state])
-                          } else {
-                            removeLocation(state)
-                          }
-                        }}
-                        className="w-4 h-4 text-primary rounded border-gray-300"
-                      />
-                      <span>{state}</span>
-                    </label>
-                  ))}
+              {locationMode === 'full' ? (
+                <div>
+                  <p className="text-xs font-medium text-[#A1A1AA] mb-2">State</p>
+                  <div className="space-y-2">
+                    {STATES.map(state => (
+                      <label key={state} className="flex items-center gap-2 cursor-pointer text-sm text-white/90">
+                        <input
+                          type="checkbox"
+                          checked={filters.location.includes(state)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              updateFilter('location', [...filters.location, state])
+                            } else {
+                              removeLocation(state)
+                            }
+                          }}
+                          className="w-4 h-4 text-primary rounded border-gray-300"
+                        />
+                        <span>{state}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null}
               <div>
-                <p className="text-xs font-medium text-gray-700 mb-2">City</p>
+                <p className="text-xs font-medium text-[#A1A1AA] mb-2">City</p>
                 <div className="space-y-2">
                   {CITIES.map(city => (
-                    <label key={city} className="flex items-center gap-2 cursor-pointer text-sm">
+                    <label key={city} className="flex items-center gap-2 cursor-pointer text-sm text-white/90">
                       <input
                         type="checkbox"
                         checked={filters.location.includes(city)}
@@ -390,54 +402,58 @@ export function FilterSidebar({ filters, onChange, activeFiltersCount }: FilterS
 
           <div className="border-t border-gray-200" />
 
-          {/* Rating */}
-          <FilterSection title="Rating" section="rating">
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs font-medium text-gray-700 mb-2 block">
-                  Minimum Rating
-                </label>
-                <div className="flex gap-1 justify-center">
-                  {[1, 2, 3, 4, 5].map(star => (
-                    <button
-                      key={star}
-                      onClick={() => updateFilter('rating', { 
-                        ...filters.rating, 
-                        min: star 
+          {!hide('rating') ? (
+            <>
+              <FilterSection title="Rating" section="rating">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-700 mb-2 block">
+                      Minimum Rating
+                    </label>
+                    <div className="flex gap-1 justify-center">
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => updateFilter('rating', {
+                            ...filters.rating,
+                            min: star
+                          })}
+                          className={cn(
+                            "text-2xl transition-transform hover:scale-110",
+                            star <= filters.rating.min ? "text-yellow-400" : "text-gray-300"
+                          )}
+                        >
+                          ★
+                        </button>
+                      ))}
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1 text-center">
+                      {filters.rating.min > 0 ? `${filters.rating.min}+ stars` : 'Any rating'}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-700 mb-2 block">
+                      Min Reviews
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={filters.rating.minReviews}
+                      onChange={(e) => updateFilter('rating', {
+                        ...filters.rating,
+                        minReviews: Number(e.target.value)
                       })}
-                      className={cn(
-                        "text-2xl transition-transform hover:scale-110",
-                        star <= filters.rating.min ? "text-yellow-400" : "text-gray-300"
-                      )}
-                    >
-                      ★
-                    </button>
-                  ))}
+                      className="w-full h-9 rounded-md border border-gray-300 px-3 text-sm"
+                      placeholder="0"
+                    />
+                  </div>
                 </div>
-                <div className="text-xs text-gray-600 mt-1 text-center">
-                  {filters.rating.min > 0 ? `${filters.rating.min}+ stars` : 'Any rating'}
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-gray-700 mb-2 block">
-                  Min Reviews
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={filters.rating.minReviews}
-                  onChange={(e) => updateFilter('rating', { 
-                    ...filters.rating, 
-                    minReviews: Number(e.target.value) 
-                  })}
-                  className="w-full h-9 rounded-md border border-gray-300 px-3 text-sm"
-                  placeholder="0"
-                />
-              </div>
-            </div>
-          </FilterSection>
+              </FilterSection>
 
-          <div className="border-t border-gray-200" />
+              <div className="border-t border-gray-200" />
+            </>
+          ) : null}
 
           {/* Affiliation */}
           <FilterSection title="Affiliation" section="affiliation">
@@ -487,55 +503,59 @@ export function FilterSidebar({ filters, onChange, activeFiltersCount }: FilterS
             </div>
           </FilterSection>
 
-          <div className="border-t border-gray-200" />
+          {!hide('facilities') ? (
+            <>
+              <div className="border-t border-gray-200" />
+              <FilterSection title="Facilities" section="facilities">
+                <div className="space-y-2">
+                  {FACILITIES.map(fac => (
+                    <label key={fac} className="flex items-center gap-2 cursor-pointer text-sm">
+                      <input
+                        type="checkbox"
+                        checked={filters.facilities.includes(fac)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            updateFilter('facilities', [...filters.facilities, fac])
+                          } else {
+                            removeFacility(fac)
+                          }
+                        }}
+                        className="w-4 h-4 text-primary rounded border-gray-300"
+                      />
+                      <span>{fac}</span>
+                    </label>
+                  ))}
+                </div>
+              </FilterSection>
+            </>
+          ) : null}
 
-          {/* Facilities */}
-          <FilterSection title="Facilities" section="facilities">
-            <div className="space-y-2">
-              {FACILITIES.map(fac => (
-                <label key={fac} className="flex items-center gap-2 cursor-pointer text-sm">
-                  <input
-                    type="checkbox"
-                    checked={filters.facilities.includes(fac)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        updateFilter('facilities', [...filters.facilities, fac])
-                      } else {
-                        removeFacility(fac)
-                      }
-                    }}
-                    className="w-4 h-4 text-primary rounded border-gray-300"
-                  />
-                  <span>{fac}</span>
-                </label>
-              ))}
-            </div>
-          </FilterSection>
-
-          <div className="border-t border-gray-200" />
-
-          {/* Special */}
-          <FilterSection title="Special Features" section="special">
-            <div className="space-y-2">
-              {SPECIAL.map(spec => (
-                <label key={spec} className="flex items-center gap-2 cursor-pointer text-sm">
-                  <input
-                    type="checkbox"
-                    checked={filters.special.includes(spec)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        updateFilter('special', [...filters.special, spec])
-                      } else {
-                        removeSpecial(spec)
-                      }
-                    }}
-                    className="w-4 h-4 text-primary rounded border-gray-300"
-                  />
-                  <span>{spec}</span>
-                </label>
-              ))}
-            </div>
-          </FilterSection>
+          {!hide('special') ? (
+            <>
+              <div className="border-t border-gray-200" />
+              <FilterSection title="Special Features" section="special">
+                <div className="space-y-2">
+                  {SPECIAL.map(spec => (
+                    <label key={spec} className="flex items-center gap-2 cursor-pointer text-sm">
+                      <input
+                        type="checkbox"
+                        checked={filters.special.includes(spec)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            updateFilter('special', [...filters.special, spec])
+                          } else {
+                            removeSpecial(spec)
+                          }
+                        }}
+                        className="w-4 h-4 text-primary rounded border-gray-300"
+                      />
+                      <span>{spec}</span>
+                    </label>
+                  ))}
+                </div>
+              </FilterSection>
+            </>
+          ) : null}
         </CardContent>
       </Card>
     </aside>

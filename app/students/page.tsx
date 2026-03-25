@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { useBookingModal } from '@/contexts/BookingModalContext'
 import { CollegeLogoImage } from '@/components/common/CollegeLogoImage'
+import { STUDENT_TESTIMONIALS } from '@/lib/constants'
 
 const ParticleBackground = dynamic(
   () => import('@/components/common/ParticleBackground').then((mod) => mod.ParticleBackground),
@@ -371,12 +372,13 @@ export default function StudentsPage() {
                 >
                   Your Admission Journey Starts Here
                 </h1>
-                <p className="mt-6 text-base text-gray-300 md:text-xl">
-                  Verified placements, transparent insights, and personalized support for every admission milestone.
+                <p className="mt-6 text-base text-gray-300 md:text-xl text-center">
+                  Verified placements, transparent insights, and personalized support for every{' '}
+                  <span className="whitespace-nowrap">admission milestone.</span>
                 </p>
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
                   {[
-                    '100+ Verified College Partners',
+                    '50+ Verified College Partners',
                     '24/7 Student Support',
                     'Transparent Fee Insights'
                   ].map((badge) => (
@@ -895,7 +897,7 @@ export default function StudentsPage() {
                 <Button
                   asChild
                   size="lg"
-                  className="bg-gradient-to-r from-[#2563EB] to-[#3B82F6] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white font-semibold shadow-lg"
+                  className="bg-white text-black hover:bg-gray-200 font-semibold shadow-lg"
                 >
                     <Link href="/colleges">View all colleges</Link>
                 </Button>
@@ -1046,7 +1048,7 @@ export default function StudentsPage() {
                             type="submit"
                             size="lg"
                             disabled={isLoading}
-                            className="w-full h-12 bg-gradient-to-r from-primary-600 to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white font-semibold shadow-lg"
+                            className="w-full h-12 bg-white text-black hover:bg-gray-200 font-semibold shadow-lg"
                           >
                             {isLoading ? 'Submitting...' : 'Get Free Guidance'}
                           </Button>
@@ -1072,26 +1074,7 @@ export default function StudentsPage() {
                 <p className="mt-3 text-base text-white/70">Stories from students who secured their ideal college.</p>
               </motion.div>
               <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-                {[
-                  {
-                    name: 'Aayush Sharma',
-                    college: 'Galgotias University',
-                    text: 'Secure College made my admission process very smooth. Abhay sir and Sahil sir were very responsive and helped me with everything, from admission form filling to last-moment formalities and even hostel admission support.',
-                    rating: 5
-                  },
-                  {
-                    name: 'Ishita Dayal',
-                    college: 'ABES College',
-                    text: 'My experience with Secure College was really good. Avantika ma’am and Abhay sir guided me at every step, cleared all doubts quickly, and made admission plus hostel process easy and stress-free.',
-                    rating: 5
-                  },
-                  {
-                    name: 'Rahul Joshi',
-                    college: 'JSS Noida',
-                    text: 'Secure College helped me a lot during my admission. Sahil sir and Abhay sir were always responsive, supported me in form filling, documentation, and hostel admission, and made the whole process simple and smooth.',
-                    rating: 5
-                  }
-                ].map((testimonial, idx) => (
+                {STUDENT_TESTIMONIALS.map((testimonial, idx) => (
                   <motion.div
                     key={testimonial.name}
                     initial={{ opacity: 0, y: 20 }}

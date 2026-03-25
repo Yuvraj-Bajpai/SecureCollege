@@ -40,6 +40,23 @@ interface Props {
   profileBasePath?: string
   footerLabel?: string
   stickySidebar?: boolean
+  filterLocationMode?: 'full' | 'city-only'
+  filterHideSections?: ('rating' | 'facilities' | 'special')[]
+}
+
+function getVisiblePagination(current: number, total: number): (number | 'ellipsis')[] {
+  if (total <= 1) return [1]
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1)
+  }
+  const pages: (number | 'ellipsis')[] = [1]
+  const left = Math.max(2, current - 1)
+  const right = Math.min(total - 1, current + 1)
+  if (left > 2) pages.push('ellipsis')
+  for (let p = left; p <= right; p++) pages.push(p)
+  if (right < total - 1) pages.push('ellipsis')
+  pages.push(total)
+  return pages
 }
 
 const defaultSortOptions: SortOption[] = [
@@ -57,7 +74,9 @@ export function CollegesClient({
   defaultSort,
   profileBasePath = '/colleges',
   footerLabel = 'View Details',
-  stickySidebar = false
+  stickySidebar = false,
+  filterLocationMode = 'full',
+  filterHideSections = [],
 }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -160,21 +179,25 @@ export function CollegesClient({
   }, [filters, searchQuery, colleges])
 
   const sortedColleges = useMemo(() => {
+    const parsePlacement = (s?: string) => {
+      if (!s) return 0
+      const n = parseFloat(String(s).replace(/[^0-9.]/g, ''))
+      return Number.isFinite(n) ? n : 0
+    }
     const sorted = [...filteredColleges]
     switch (sortBy) {
       case 'highest-placement':
-        return sorted.sort((a, b) => {
-          const aNum = a.placementPercent ? parseFloat(a.placementPercent.replace(/[^0-9.]/g, '')) : 0
-          const bNum = b.placementPercent ? parseFloat(b.placementPercent.replace(/[^0-9.]/g, '')) : 0
-          return bNum - aNum
-        })
+        return sorted.sort((a, b) => parsePlacement(b.placementPercent) - parsePlacement(a.placementPercent))
       case 'highest-rating':
-        return sorted.sort((a, b) => b.rating - a.rating)
+        return sorted.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
       case 'lowest-fees':
         return sorted.sort((a, b) => {
-          const aNum = a.feeRange ? parseInt(a.feeRange.replace(/[^0-9]/g, '')) : Number.POSITIVE_INFINITY
-          const bNum = b.feeRange ? parseInt(b.feeRange.replace(/[^0-9]/g, '')) : Number.POSITIVE_INFINITY
-          return aNum - bNum
+          const parseFee = (s?: string) => {
+            if (!s) return Number.POSITIVE_INFINITY
+            const n = parseInt(s.replace(/[^0-9]/g, ''), 10)
+            return Number.isFinite(n) ? n : Number.POSITIVE_INFINITY
+          }
+          return parseFee(a.feeRange) - parseFee(b.feeRange)
         })
       case 'nirf-rank':
         return sorted.sort((a, b) => (a.nirfRank || 9999) - (b.nirfRank || 9999))
@@ -194,6 +217,11 @@ export function CollegesClient({
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  useEffect(() => {
+    const tp = Math.max(1, Math.ceil(sortedColleges.length / itemsPerPage))
+    setCurrentPage((p) => (p > tp ? tp : p))
+  }, [sortedColleges.length, itemsPerPage])
 
   return (
     <div className="min-h-screen pb-16">
@@ -312,6 +340,8 @@ export function CollegesClient({
               filters={filters}
               onChange={setFilters}
               activeFiltersCount={activeFiltersCount}
+              locationMode={filterLocationMode}
+              hideSections={filterHideSections}
             />
             <div className="mt-8 lg:hidden">
               <Button 
@@ -363,40 +393,40 @@ export function CollegesClient({
                   })}
                 </div>
                 {totalPages > 1 && (
-                  <div className="flex justify-center items-center gap-2 mt-12">
+                  <div className="flex flex-wrap justify-center items-center gap-2 mt-12">
                     <Button
                       variant="outline"
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
+                      className="border-white/20 bg-white/5 text-white hover:bg-white/10"
                     >
                       Previous
                     </Button>
-                    {[...Array(totalPages)].map((_, i) => {
-                      const page = i + 1
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1)
-                      ) {
-                        return (
-                          <Button
-                            key={page}
-                            variant={page === currentPage ? "default" : "outline"}
-                            onClick={() => handlePageChange(page)}
-                            className={page === currentPage ? "bg-primary" : ""}
-                          >
-                            {page}
-                          </Button>
-                        )
-                      } else if (page === currentPage - 2 || page === currentPage + 2) {
-                        return <span key={page} className="px-2">...</span>
-                      }
-                      return null
-                    })}
+                    {getVisiblePagination(currentPage, totalPages).map((item, idx) =>
+                      item === 'ellipsis' ? (
+                        <span key={`ellipsis-${idx}`} className="px-2 text-white/50 select-none">
+                          …
+                        </span>
+                      ) : (
+                        <Button
+                          key={item}
+                          variant={item === currentPage ? 'default' : 'outline'}
+                          onClick={() => handlePageChange(item)}
+                          className={
+                            item === currentPage
+                              ? 'bg-primary text-white'
+                              : 'border-white/20 bg-white/5 text-white hover:bg-white/10'
+                          }
+                        >
+                          {item}
+                        </Button>
+                      )
+                    )}
                     <Button
                       variant="outline"
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
+                      className="border-white/20 bg-white/5 text-white hover:bg-white/10"
                     >
                       Next
                     </Button>
