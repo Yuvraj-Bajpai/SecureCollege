@@ -63,12 +63,6 @@ export default function ProfilePage() {
   })
 
   const [meta, setMeta] = useState({
-    address_line1: '',
-    address_line2: '',
-    city: '',
-    state: '',
-    pincode: '',
-    high_school_percent: '',
     intermediate_percent: '',
     entrance_exam: '',
     entrance_rank: '',
@@ -92,12 +86,6 @@ export default function ProfilePage() {
 
       const metadata = (sessionUser.user_metadata || {}) as Record<string, unknown>
       setMeta({
-        address_line1: String(metadata.address_line1 || ''),
-        address_line2: String(metadata.address_line2 || ''),
-        city: String(metadata.city || ''),
-        state: String(metadata.state || ''),
-        pincode: String(metadata.pincode || ''),
-        high_school_percent: String(metadata.high_school_percent || ''),
         intermediate_percent: String(metadata.intermediate_percent || ''),
         entrance_exam: String(metadata.entrance_exam || ''),
         entrance_rank: String(metadata.entrance_rank || ''),
@@ -156,10 +144,6 @@ export default function ProfilePage() {
       profile.phone && profile.phone.trim().length > 0,
       profile.age && profile.age.trim().length > 0,
       profile.course && profile.course.trim().length > 0,
-      meta.address_line1.trim().length > 0,
-      meta.city.trim().length > 0,
-      meta.state.trim().length > 0,
-      meta.pincode.trim().length > 0,
       meta.intermediate_percent.trim().length > 0,
     ]
     const done = checks.filter(Boolean).length
@@ -224,12 +208,6 @@ export default function ProfilePage() {
     const { error: userError } = await supabase.auth.updateUser({
       data: {
         full_name: fullName,
-        address_line1: meta.address_line1.trim(),
-        address_line2: meta.address_line2.trim(),
-        city: meta.city.trim(),
-        state: meta.state.trim(),
-        pincode: meta.pincode.trim(),
-        high_school_percent: meta.high_school_percent.trim(),
         intermediate_percent: meta.intermediate_percent.trim(),
         entrance_exam: meta.entrance_exam.trim(),
         entrance_rank: meta.entrance_rank.trim(),
@@ -494,15 +472,7 @@ export default function ProfilePage() {
                         <option value="Other" className="bg-[#121212]">Other</option>
                       </select>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-[#A1A1AA]">10th Percentage / CGPA</label>
-                      <Input
-                        value={meta.high_school_percent}
-                        onChange={(e) => updateMetaField('high_school_percent', e.target.value)}
-                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
-                        placeholder="e.g. 90% or 9.5 CGPA"
-                      />
-                    </div>
+
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-[#A1A1AA]">12th Percentage (Intermediate)</label>
                       <Input
@@ -584,72 +554,7 @@ export default function ProfilePage() {
                   </div>
                 </PremiumCard>
 
-                <PremiumCard className="p-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                      <MapPin className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-white">Address Details</h2>
-                      <p className="text-sm text-[#A1A1AA]">Used for counselling and verification.</p>
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2 md:col-span-2">
-                      <label className="text-sm font-medium text-[#A1A1AA]">Address Line 1 *</label>
-                      <Input
-                        value={meta.address_line1}
-                        onChange={(e) => updateMetaField('address_line1', e.target.value)}
-                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
-                        placeholder="House / Street / Locality"
-                      />
-                    </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <label className="text-sm font-medium text-[#A1A1AA]">Address Line 2</label>
-                      <Input
-                        value={meta.address_line2}
-                        onChange={(e) => updateMetaField('address_line2', e.target.value)}
-                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
-                        placeholder="Landmark / Area"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-[#A1A1AA]">City *</label>
-                      <Input
-                        value={meta.city}
-                        onChange={(e) => updateMetaField('city', e.target.value)}
-                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
-                        placeholder="City"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-[#A1A1AA]">State *</label>
-                      <Input
-                        value={meta.state}
-                        onChange={(e) => updateMetaField('state', e.target.value)}
-                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
-                        placeholder="State"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-[#A1A1AA]">Pincode *</label>
-                      <Input
-                        value={meta.pincode}
-                        onChange={(e) => updateMetaField('pincode', e.target.value)}
-                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
-                        placeholder="e.g. 110001"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-[#A1A1AA]">Last Updated</label>
-                      <div className="h-10 rounded-md border border-white/10 bg-white/5 px-3 flex items-center gap-2 text-sm text-[#A1A1AA]">
-                        <Calendar className="w-4 h-4" />
-                        <span>Updates save instantly to your account</span>
-                      </div>
-                    </div>
-                  </div>
-                </PremiumCard>
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-end">
                   <Button

@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { SOCIAL_LINKS, SITE_CONFIG } from '@/lib/constants'
 import { PremiumCard } from '@/components/ui/PremiumCard'
+import { supabase } from '@/lib/supabase'
 
 const ParticleBackground = dynamic(
   () => import('@/components/common/ParticleBackground').then((mod) => mod.ParticleBackground),
@@ -90,8 +91,20 @@ function ContactForm() {
     if (!validate()) return
 
     setIsSubmitting(true)
-    // Simulate API call
-    setTimeout(() => {
+    
+    try {
+      const { error } = await supabase
+        .from('enquiries')
+        .insert({
+          name: formData.name,
+          phone: formData.phone,
+          course: formData.queryType, // Storing queryType in course field for now
+          city: formData.message.slice(0, 100), // Storing a snippet of message in city for now, or just use it as it is
+          // Note: The schema for enquiries table might be limited, let's use what's available
+        })
+
+      if (error) throw error
+
       setIsSubmitting(false)
       setShowSuccess(true)
       setFormData({
@@ -104,7 +117,11 @@ function ContactForm() {
         consent: false
       })
       setTimeout(() => setShowSuccess(false), 5000)
-    }, 1500)
+    } catch (err: any) {
+      console.error('Error submitting enquiry:', err)
+      setErrors({ submit: 'Unable to send message. Please try again.' })
+      setIsSubmitting(false)
+    }
   }
 
   return (

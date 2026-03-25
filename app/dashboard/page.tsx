@@ -47,11 +47,9 @@ export default function DashboardPage() {
     course: null,
   })
   const [meta, setMeta] = useState({
-    address_line1: '',
-    address_line2: '',
-    city: '',
-    state: '',
-    pincode: '',
+    intermediate_percent: '',
+    entrance_exam: '',
+    entrance_rank: '',
   })
   const [bookings, setBookings] = useState<BookingRow[]>([])
   const [showSetup, setShowSetup] = useState(false)
@@ -78,11 +76,9 @@ export default function DashboardPage() {
 
       const metadata = (sessionUser.user_metadata || {}) as Record<string, unknown>
       setMeta({
-        address_line1: String(metadata.address_line1 || ''),
-        address_line2: String(metadata.address_line2 || ''),
-        city: String(metadata.city || ''),
-        state: String(metadata.state || ''),
-        pincode: String(metadata.pincode || ''),
+        intermediate_percent: String(metadata.intermediate_percent || ''),
+        entrance_exam: String(metadata.entrance_exam || ''),
+        entrance_rank: String(metadata.entrance_rank || ''),
       })
 
       const { data: profileRow } = await supabase
@@ -116,17 +112,14 @@ export default function DashboardPage() {
 
       setBookings((bookingRows || []) as BookingRow[])
 
+      const hasSkipped = localStorage.getItem(`skip_setup_${sessionUser.id}`)
       const needsSetup = [
         (nextProfile.full_name || '').trim().length > 0,
         (nextProfile.phone || '').trim().length > 0,
         (nextProfile.course || '').trim().length > 0,
-        String(metadata.address_line1 || '').trim().length > 0,
-        String(metadata.city || '').trim().length > 0,
-        String(metadata.state || '').trim().length > 0,
-        String(metadata.pincode || '').trim().length > 0,
       ].includes(false)
 
-      setShowSetup(needsSetup)
+      setShowSetup(needsSetup && !hasSkipped)
       setLoading(false)
     }
     loadSession()
@@ -141,10 +134,7 @@ export default function DashboardPage() {
       profile.phone && profile.phone.trim().length > 0,
       profile.age && profile.age.trim().length > 0,
       profile.course && profile.course.trim().length > 0,
-      meta.address_line1.trim().length > 0,
-      meta.city.trim().length > 0,
-      meta.state.trim().length > 0,
-      meta.pincode.trim().length > 0,
+      meta.intermediate_percent.trim().length > 0,
     ]
     const done = checks.filter(Boolean).length
     return Math.round((done / checks.length) * 100)
@@ -153,6 +143,13 @@ export default function DashboardPage() {
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     router.replace('/login')
+  }
+
+  const handleSkipSetup = () => {
+    if (user) {
+      localStorage.setItem(`skip_setup_${user.id}`, 'true')
+    }
+    setShowSetup(false)
   }
 
   const updateProfileField = (key: keyof ProfileRow, value: string) => {
@@ -180,12 +177,6 @@ export default function DashboardPage() {
       return
     }
 
-    if (!meta.address_line1.trim() || !meta.city.trim() || !meta.state.trim() || !meta.pincode.trim()) {
-      setSaving(false)
-      setSetupError('Please complete your address details.')
-      return
-    }
-
     const { error: profileError } = await supabase
       .from('profiles')
       .upsert(
@@ -208,11 +199,9 @@ export default function DashboardPage() {
     const { error: userError } = await supabase.auth.updateUser({
       data: {
         full_name: fullName,
-        address_line1: meta.address_line1.trim(),
-        address_line2: meta.address_line2.trim(),
-        city: meta.city.trim(),
-        state: meta.state.trim(),
-        pincode: meta.pincode.trim(),
+        intermediate_percent: meta.intermediate_percent.trim(),
+        entrance_exam: meta.entrance_exam.trim(),
+        entrance_rank: meta.entrance_rank.trim(),
       },
     })
 
@@ -427,7 +416,7 @@ export default function DashboardPage() {
                 <div>
                   <h2 className="text-2xl font-bold text-white">Complete your profile</h2>
                   <p className="text-sm text-[#A1A1AA] mt-2">
-                    Add your phone and address details before using the dashboard.
+                    Add your basic details to get personalized college recommendations.
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
@@ -472,52 +461,13 @@ export default function DashboardPage() {
                     placeholder="e.g. B.Tech CSE"
                   />
                 </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-[#A1A1AA]">Address Line 1 *</label>
-                  <Input
-                    value={meta.address_line1}
-                    onChange={(e) => updateMetaField('address_line1', e.target.value)}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
-                    placeholder="House / Street / Locality"
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-[#A1A1AA]">Address Line 2</label>
-                  <Input
-                    value={meta.address_line2}
-                    onChange={(e) => updateMetaField('address_line2', e.target.value)}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
-                    placeholder="Landmark / Area"
-                  />
-                </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-[#A1A1AA]">City *</label>
+                  <label className="text-sm font-medium text-[#A1A1AA]">12th Percentage</label>
                   <Input
-                    value={meta.city}
-                    onChange={(e) => updateMetaField('city', e.target.value)}
+                    value={meta.intermediate_percent}
+                    onChange={(e) => updateMetaField('intermediate_percent', e.target.value)}
                     className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
-                    placeholder="City"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-[#A1A1AA]">State *</label>
-                  <Input
-                    value={meta.state}
-                    onChange={(e) => updateMetaField('state', e.target.value)}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary"
-                    placeholder="State"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-[#A1A1AA]">Pincode *</label>
-                  <Input
-                    value={meta.pincode}
-                    onChange={(e) => updateMetaField('pincode', e.target.value)}
-                    className={cn(
-                      'bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-primary',
-                      meta.pincode && !/^\d{6}$/.test(meta.pincode) ? 'border-red-500/50 focus:border-red-500' : ''
-                    )}
-                    placeholder="e.g. 110001"
+                    placeholder="e.g. 85%"
                   />
                 </div>
                 <div className="space-y-2">
@@ -533,12 +483,20 @@ export default function DashboardPage() {
 
               <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-end">
                 <Button
+                  variant="ghost"
+                  size="xl"
+                  className="h-12 px-8 text-[#A1A1AA] hover:text-white hover:bg-white/5"
+                  onClick={handleSkipSetup}
+                >
+                  Skip for now
+                </Button>
+                <Button
                   variant="outline"
                   size="xl"
                   className="h-12 px-8 border-white/20 bg-white/5 text-white hover:bg-white/10"
                   asChild
                 >
-                  <Link href="/dashboard/profile">Edit in Profile</Link>
+                  <Link href="/dashboard/profile">Go to Profile</Link>
                 </Button>
                 <Button
                   size="xl"

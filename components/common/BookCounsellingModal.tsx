@@ -9,6 +9,7 @@ import { useBookingModal } from '@/contexts/BookingModalContext'
 import { supabase } from '@/lib/supabase'
 
 type Profile = {
+  full_name?: string | null
   phone?: string | null
   current_status?: string | null
   target_course?: string | null
@@ -24,6 +25,7 @@ export function BookCounsellingModal() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [sessionLoading, setSessionLoading] = useState(false)
   const [profileLoading, setProfileLoading] = useState(false)
+  const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [currentStatus, setCurrentStatus] = useState('')
   const [targetCourse, setTargetCourse] = useState('')
@@ -63,10 +65,11 @@ export function BookCounsellingModal() {
       setProfileLoading(true)
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('phone,current_status,target_course')
+        .select('full_name,phone,current_status,target_course')
         .eq('id', activeSession.user.id)
         .maybeSingle()
       setProfile(profileData ?? null)
+      setName(profileData?.full_name ?? activeSession.user.user_metadata?.full_name ?? '')
       setPhone(profileData?.phone ?? '')
       setCurrentStatus(profileData?.current_status ?? '')
       setTargetCourse(profileData?.target_course ?? '')
@@ -93,6 +96,10 @@ export function BookCounsellingModal() {
     setError('')
 
     const cleanedPhone = phone.replace(/\D/g, '')
+    if (!name.trim()) {
+      setError('Please enter your name.')
+      return
+    }
     if (cleanedPhone.length !== 10) {
       setError('Please enter a valid 10-digit phone number.')
       return
@@ -117,15 +124,17 @@ export function BookCounsellingModal() {
 
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({
+      .upsert({
+        id: userId,
+        full_name: name.trim(),
         phone: cleanedPhone,
         current_status: currentStatus,
         target_course: targetCourse,
-      })
-      .eq('id', userId)
+      }, { onConflict: 'id' })
 
     if (updateError) {
-      setError('Unable to update your profile. Please try again.')
+      console.error('Update profile error:', updateError)
+      setError(`Unable to update your profile: ${updateError.message}`)
       setIsSubmitting(false)
       return
     }
@@ -135,7 +144,8 @@ export function BookCounsellingModal() {
       .insert({ student_id: userId, status: 'pending' })
 
     if (insertError) {
-      setError('Unable to book a session. Please try again.')
+      console.error('Booking error:', insertError)
+      setError(`Unable to book a session: ${insertError.message}`)
       setIsSubmitting(false)
       return
     }
@@ -247,6 +257,18 @@ export function BookCounsellingModal() {
             </div>
           ) : (
             <form className="space-y-4" onSubmit={handleSubmitProfile}>
+              <div>
+                <label className="text-sm font-medium text-white">Full Name</label>
+                <Input
+                  type="text"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Enter your full name"
+                  className="mt-2 h-11"
+                  required
+                />
+              </div>
+
               <div>
                 <label className="text-sm font-medium text-white">Phone Number</label>
                 <Input

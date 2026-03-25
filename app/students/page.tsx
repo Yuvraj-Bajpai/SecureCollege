@@ -238,19 +238,21 @@ export default function StudentsPage() {
   const featuredColleges = [
     {
       id: 'abes-it',
-      name: 'ABES Institute of Technology',
+      name: 'ABES Engineering College',
+      slug: 'abes-engineering-college-ghaziabad',
       city: 'Ghaziabad',
       state: 'Uttar Pradesh',
       category: 'Engineering',
-      nirfRank: 185,
+      nirfRank: 201,
       logo: '/images/logo.png',
-      rating: 4.3,
+      rating: 4.1,
       feeRange: '₹1.2L - ₹1.5L/year',
       highlight: true
     },
     {
       id: 'jss-academy',
       name: 'JSS Academy of Technical Education',
+      slug: 'jss-academy-technical-education-noida',
       city: 'Noida',
       state: 'Uttar Pradesh',
       category: 'Engineering',
@@ -262,6 +264,7 @@ export default function StudentsPage() {
     {
       id: 'gl-bajaj',
       name: 'GL Bajaj Institute of Technology',
+      slug: 'gl-bajaj-greater-noida',
       city: 'Greater Noida',
       state: 'Uttar Pradesh',
       category: 'Engineering',
@@ -271,48 +274,40 @@ export default function StudentsPage() {
       feeRange: '₹1.0L - ₹1.3L/year'
     },
     {
-      id: 'iiit-delhi',
-      name: 'IIIT Delhi',
-      city: 'New Delhi',
-      state: 'Delhi',
+      id: 'kiet',
+      name: 'KIET Group of Institutions',
+      slug: 'kiet-ghaziabad',
+      city: 'Ghaziabad',
+      state: 'Uttar Pradesh',
       category: 'Engineering',
-      nirfRank: 56,
-      logo: '/images/logo.png',
-      rating: 4.5,
-      feeRange: '₹80K - ₹1.5L/year'
-    },
-    {
-      id: 'jmi',
-      name: 'Jamia Millia Islamia',
-      city: 'New Delhi',
-      state: 'Delhi',
-      category: 'Engineering',
-      nirfRank: 17,
+      nirfRank: 151,
       logo: '/images/logo.png',
       rating: 4.2,
-      feeRange: '₹50K - ₹80K/year'
+      feeRange: '₹1.1L - ₹1.4L/year'
     },
     {
-      id: 'nsut',
-      name: 'Netaji Subhas University of Technology',
-      city: 'New Delhi',
-      state: 'Delhi',
+      id: 'akgec',
+      name: 'Ajay Kumar Garg Engineering College',
+      slug: 'akgec-ghaziabad',
+      city: 'Ghaziabad',
+      state: 'Uttar Pradesh',
       category: 'Engineering',
-      nirfRank: 42,
+      nirfRank: 190,
       logo: '/images/logo.png',
-      rating: 4.4,
-      feeRange: '₹60K - ₹1.0L/year'
+      rating: 4.0,
+      feeRange: '₹1.1L - ₹1.4L/year'
     },
     {
       id: 'galgotias',
-      name: 'Galgotias University',
+      name: 'Galgotias College of Engineering',
+      slug: 'gcet-greater-noida',
       city: 'Greater Noida',
       state: 'Uttar Pradesh',
       category: 'Engineering',
-      nirfRank: 91,
+      nirfRank: 202,
       logo: '/images/logo.png',
-      rating: 4.0,
-      feeRange: '₹1.2L - ₹1.7L/year'
+      rating: 3.9,
+      feeRange: '₹1.0L - ₹1.3L/year'
     }
   ]
 
@@ -912,26 +907,28 @@ export default function StudentsPage() {
                     viewport={{ once: true }}
                     whileHover={{ y: -5 }}
                   >
-                    <Card className="h-full border border-white/10 bg-white/5 backdrop-blur-xl transition-shadow hover:shadow-primary-glow">
-                      <CardContent className="p-5 h-full flex flex-col justify-between">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <h3 className="text-lg font-semibold text-white">{college.name}</h3>
-                            <p className="mt-1 text-sm text-[#A1A1AA] flex items-center gap-1">
-                              <MapPin className="h-4 w-4 text-primary" />
-                              {college.city}, {college.state}
-                            </p>
+                    <Link href={`/colleges/${college.slug}`}>
+                      <Card className="h-full border border-white/10 bg-white/5 backdrop-blur-xl transition-shadow hover:shadow-primary-glow cursor-pointer">
+                        <CardContent className="p-5 h-full flex flex-col justify-between">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <h3 className="text-lg font-semibold text-white">{college.name}</h3>
+                              <p className="mt-1 text-sm text-[#A1A1AA] flex items-center gap-1">
+                                <MapPin className="h-4 w-4 text-primary" />
+                                {college.city}, {college.state}
+                              </p>
+                            </div>
+                            <div className="rounded-full bg-primary/10 text-primary border border-primary/20 px-3 py-1 text-xs font-semibold">
+                              NIRF {college.nirfRank}
+                            </div>
                           </div>
-                          <div className="rounded-full bg-primary/10 text-primary border border-primary/20 px-3 py-1 text-xs font-semibold">
-                            NIRF {college.nirfRank}
+                          <div className="mt-4 flex items-center justify-between">
+                            <span className="text-sm text-[#A1A1AA]">Avg Fees</span>
+                            <span className="text-sm font-medium text-white">{college.feeRange}</span>
                           </div>
-                        </div>
-                        <div className="mt-4 flex items-center justify-between">
-                          <span className="text-sm text-[#A1A1AA]">Avg Fees</span>
-                          <span className="text-sm font-medium text-white">{college.feeRange}</span>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   </motion.div>
                 ))}
               </div>
